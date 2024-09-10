@@ -1,7 +1,7 @@
 %%
 %Last edited by Amir Dakhili on September 3rd, 2024
 %%
-
+%% test run by Arush Arun
 %ROI PSC with confound - image sets
 %TURN OFF BLUETOOTH IF ON
 % Please use Backslash for file and folder names in WINDOWS!
