@@ -1,7 +1,7 @@
 %%
 %Last edited by Amir Dakhili on October 15th, 2024
 % latest modifications:
-% all conditions now include three images each for 10 seconds
+% conditions now include three images each for 10 seconds
 % thermometer height reduced to 20 rectangles and one sided
 %%
 % Please use Backslash for file and folder names in WINDOWS!
