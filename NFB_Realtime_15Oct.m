@@ -1448,13 +1448,6 @@ function [block_start, block_end, block_dur, block_start_TR, block_end_TR, block
     % Draw the rating marker
     Screen('FillRect', window, markerColor, [ratingPosition - markerWidth/2, scaleY - scaleHeight/2, ratingPosition + markerWidth/2, scaleY + scaleHeight * 1.5]);
 
-    % Draw the numbers and labels again
-    for i = 0:10
-        DrawFormattedText(window, num2str(i), scaleX + (i / 10) * scaleLength - 10, scaleY + scaleHeight + scr_rect(4) * 0.06, textColor);
-    end
-    DrawFormattedText(window, 'No Craving', label1X, label1Y, textColor);
-    DrawFormattedText(window, 'High Craving', label2X, label2Y, textColor);
-
     
 
     % Flip the screen
