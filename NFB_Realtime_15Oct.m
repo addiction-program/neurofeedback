@@ -1,7 +1,7 @@
 %%
 %Last edited by Amir Dakhili on October 15th, 2024
 % latest modifications:
-% all conditions now include three images each for 10 seconds
+% conditions now include three images each for 10 seconds
 % thermometer height reduced to 20 rectangles and one sided
 %%
 % Please use Backslash for file and folder names in WINDOWS!
@@ -17,7 +17,7 @@ global TR windowHeight window scr_rect centreX centreY escapeKey start_time curr
 
 %% Needs Change
 TR = 1; % Repetition time in seconds
-feedback_dir = 'D:\Pilot11.10_Vale\NFB'; % Path to the feedback folder
+feedback_dir = 'C:\Users\NFB-user\Documents\NFB\Cue-reactivity latest\3-Current_MR_CRtask_v1_after2ndScan\Current_MR_CRtask_v1\MR_CRtask_v1\NFB'; % Path to the feedback folder
 feedback_file_name = 'NFB'; % Prefix for feedback files
 run_no = 1; % Run number
 
@@ -136,7 +136,7 @@ try
     [windowWidth, windowHeight] = Screen('WindowSize', window); 
 
     % Get a list of all image files in the image directory
-    imageDir = fullfile(pwd, 'TRIGGER_C_Media');
+    imageDir = fullfile('C:\Users\NFB-user\Documents\NFB\Cue-reactivity latest\3-Current_MR_CRtask_v1_after2ndScan\Current_MR_CRtask_v1\MR_CRtask_v1\TRIGGER_C_Media');
     imageFiles = dir(fullfile(imageDir, 'C*.png')); % Assuming all images start with 'C'
 
     % Number of images available
@@ -1455,13 +1455,7 @@ function [block_start, block_end, block_dur, block_start_TR, block_end_TR, block
     DrawFormattedText(window, 'No Craving', label1X, label1Y, textColor);
     DrawFormattedText(window, 'High Craving', label2X, label2Y, textColor);
 
-    % Display countdown if within countdownDuration
-    if GetSecs() - countdownStartTime < countdownDuration
-        remainingTime = ceil(countdownDuration - (GetSecs() - countdownStartTime));
-        countdownText = sprintf('%d', remainingTime);
-        countdownY = scr_rect(4) * 0.45; 
-        DrawFormattedText(window, countdownText, 'center', countdownY, textColor); 
-    end
+    
 
     % Flip the screen
     Screen('Flip', window);
@@ -1500,13 +1494,7 @@ function [block_start, block_end, block_dur, block_start_TR, block_end_TR, block
             DrawFormattedText(window, 'No Craving', label1X, label1Y, textColor);
             DrawFormattedText(window, 'High Craving', label2X, label2Y, textColor);
 
-            % Display countdown if within countdownDuration
-            if GetSecs() - countdownStartTime < countdownDuration
-                remainingTime = ceil(countdownDuration - (GetSecs() - countdownStartTime));
-                countdownText = sprintf('%d', remainingTime);
-                countdownY = scr_rect(4) * 0.45; 
-                DrawFormattedText(window, countdownText, 'center', countdownY, textColor); 
-            end
+          
 
             % Flip the screen
             WaitSecs(0.1);
