@@ -27,6 +27,7 @@ function CR_fMRI_main_v2
 sca;
 close all;
 clear;
+Screen('Preference', 'SkipSyncTests', 1);
 
 fprintf('\nInitialising...\n');
 % set the random number generator seed based on the current time
@@ -115,7 +116,7 @@ end
 % Set Font and other display parameters
 InstrFont = 58; 
 InstrFontSmall = 44; 
-FixCrossFont = 100;
+FixCrossFont = 500;
 
 % Define colors
 white = WhiteIndex(numscreen);
@@ -123,9 +124,10 @@ black = BlackIndex(numscreen);
 grey = GrayIndex(numscreen);
 red = [white 0 0];
 blue = [0 0 white];
+magenta = [255 0 255];
 
 % Open an on screen window and color it grey
-[window, windowRect] = PsychImaging('OpenWindow', numscreen, white, []);
+[window, windowRect] = PsychImaging('OpenWindow', numscreen, black, []);
 
 % Set the blend funciton for the screen
 Screen('BlendFunction', window, 'GL_SRC_ALPHA', 'GL_ONE_MINUS_SRC_ALPHA');
@@ -149,7 +151,7 @@ WaitSecs(1);
 
 % loading images
 Screen('TextSize',window, InstrFont);
-DrawFormattedText(window, 'Loading stimuli...', 'center', 'center', black);
+DrawFormattedText(window, 'Loading stimuli...', 'center', 'center', magenta);
 Screen('Flip',window);
 % in this code we read in images starting with C (i.e. cannabis) first so the initial order of trials is C1-30 images are trial 1-30, N1-30 (i.e. neurtal) images are trial 31-60
 
@@ -184,11 +186,11 @@ else
     ShowCursor;
     ListenChar(0); % Restore keyboard output to Matlab 
     Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window, 'Images cannot be loaded! Check session version.', 'center', 'center', black);
+    DrawFormattedText(window, 'Images cannot be loaded! Check session version.', 'center', 'center', magenta);
     Screen('Flip',window);
     WaitSecs(3);
     Screen('TextSize',window, InstrFont);
-    DrawFormattedText(window, 'TASK TEMINATED!', 'center', 'center', black);
+    DrawFormattedText(window, 'TASK TEMINATED!', 'center', 'center', magenta);
     Screen('Flip',window);
     WaitSecs(2);
     sca;
@@ -262,11 +264,11 @@ else
     ShowCursor;
     ListenChar(0); % Restore keyboard output to Matlab 
     Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window, 'Incorrect input for randomisation! Check randomisation version.', 'center', 'center', black);
+    DrawFormattedText(window, 'Incorrect input for randomisation! Check randomisation version.', 'center', 'center', magenta);
     Screen('Flip',window);
     WaitSecs(3);
     Screen('TextSize',window, InstrFont);
-    DrawFormattedText(window, 'TASK TEMINATED!', 'center', 'center', black);
+    DrawFormattedText(window, 'TASK TEMINATED!', 'center', 'center', magenta);
     Screen('Flip',window);
     WaitSecs(2);
     sca;
@@ -275,7 +277,7 @@ end
  
 WaitSecs(0.1);
 Screen('TextSize',window, InstrFont);
-DrawFormattedText(window, 'Stimuli loaded.', 'center', 'center', black);
+DrawFormattedText(window, 'Stimuli loaded.', 'center', 'center', magenta);
 Screen('TextSize',window, InstrFontSmall);
 DrawFormattedText(window, 'Press any key to continue','center', screenYpixels * 0.7, grey);
 Screen('Flip',window);
@@ -288,7 +290,7 @@ KbStrokeWait(-1);
 % VAS section
 if answerdebug
     Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window, 'Debug run. Skipping questions...', 'center', 'center', black);
+    DrawFormattedText(window, 'Debug run. Skipping questions...', 'center', 'center', magenta);
     Screen('Flip',window);
     WaitSecs(2);
 else
@@ -296,7 +298,7 @@ else
     while redo < 1
     % VAS questions
     Screen('TextSize',window, InstrFont);
-    DrawFormattedText(window, 'Please respond to \nthe following questions verbally', 'center', 'center', black);
+    DrawFormattedText(window, 'Please respond to \nthe following questions verbally', 'center', 'center', magenta);
     Screen('TextSize',window, InstrFontSmall);
     DrawFormattedText(window, 'Press any key to continue','center', screenYpixels * 0.7, grey);
     Screen('Flip',window);
@@ -314,15 +316,15 @@ else
     
     % Draw all the text in one go
     Screen('TextSize', window, InstrFont);
-    DrawFormattedText(window, Q0_q,'center', screenYpixels * 0.3, black);
-    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, black);
+    DrawFormattedText(window, Q0_q,'center', screenYpixels * 0.3, magenta);
+    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
     Screen('TextSize',window, InstrFontSmall);
     DrawFormattedText(window, Q0_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
     DrawFormattedText(window, Q0_end2,screenXpixels * 0.74, screenYpixels * 0.69, grey);
     Screen('TextSize',window, InstrFontSmall);
     DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
     Screen('TextSize', window, InstrFont);
-    TaskInfo.Q0_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, black);
+    TaskInfo.Q0_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
     % Flip to the screen
     Screen('Flip', window);
     % Wait for a key press
@@ -336,15 +338,15 @@ else
     
     % Draw all the text in one go
     Screen('TextSize', window, InstrFont);
-    DrawFormattedText(window, Q1_q,'center', screenYpixels * 0.3, black);
-    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, black);
+    DrawFormattedText(window, Q1_q,'center', screenYpixels * 0.3, magenta);
+    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
     Screen('TextSize',window, InstrFontSmall);
     DrawFormattedText(window, Q1_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
     DrawFormattedText(window, Q1_end2,screenXpixels * 0.64, screenYpixels * 0.69, grey);
     Screen('TextSize',window, InstrFontSmall);
     DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
     Screen('TextSize', window, InstrFont);
-    TaskInfo.Q1_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, black);
+    TaskInfo.Q1_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
     
     % Flip to the screen
     Screen('Flip', window);
@@ -359,15 +361,15 @@ else
     
     % Draw all the text in one go
     Screen('TextSize', window, InstrFont);
-    DrawFormattedText(window, Q2_q,'center', screenYpixels * 0.3, black);
-    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, black);
+    DrawFormattedText(window, Q2_q,'center', screenYpixels * 0.3, magenta);
+    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
     Screen('TextSize',window, InstrFontSmall);
     DrawFormattedText(window, Q2_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
     DrawFormattedText(window, Q2_end2,screenXpixels * 0.66, screenYpixels * 0.69, grey);
     Screen('TextSize',window, InstrFontSmall);
     DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
     Screen('TextSize', window, InstrFont);
-    TaskInfo.Q2_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, black);
+    TaskInfo.Q2_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
     % Flip to the screen
     Screen('Flip', window);
     % Wait for a key press
@@ -380,15 +382,15 @@ else
     
     % Draw all the text in one go
     Screen('TextSize', window, InstrFont);
-    DrawFormattedText(window, Q3_q,'center', screenYpixels * 0.3, black);
-    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, black);
+    DrawFormattedText(window, Q3_q,'center', screenYpixels * 0.3, magenta);
+    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
     Screen('TextSize',window, InstrFontSmall);
     DrawFormattedText(window, Q3_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
     DrawFormattedText(window, Q3_end2,screenXpixels * 0.71, screenYpixels * 0.69, grey);
     Screen('TextSize',window, InstrFontSmall);
     DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
     Screen('TextSize', window, InstrFont);
-    TaskInfo.Q3_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, black);
+    TaskInfo.Q3_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
     % Flip to the screen
     Screen('Flip', window);
     % Wait for a key press
@@ -401,15 +403,15 @@ else
     
     % Draw all the text in one go
     Screen('TextSize', window, InstrFont);
-    DrawFormattedText(window, Q4_q,'center', screenYpixels * 0.3, black);
-    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, black);
+    DrawFormattedText(window, Q4_q,'center', screenYpixels * 0.3, magenta);
+    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
     Screen('TextSize',window, InstrFontSmall);
     DrawFormattedText(window, Q4_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
     DrawFormattedText(window, Q4_end2,screenXpixels * 0.72, screenYpixels * 0.69, grey);
     Screen('TextSize',window, InstrFontSmall);
     DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
     Screen('TextSize', window, InstrFont);
-    TaskInfo.Q4_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, black);
+    TaskInfo.Q4_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
     % Flip to the screen
     Screen('Flip', window);
     % Wait for a key press
@@ -421,15 +423,15 @@ else
     
     % Draw all the text in one go
     Screen('TextSize', window, InstrFont);
-    DrawFormattedText(window, Q5_q,'center', screenYpixels * 0.3, black);
-    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, black);
+    DrawFormattedText(window, Q5_q,'center', screenYpixels * 0.3, magenta);
+    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
     Screen('TextSize',window, InstrFontSmall);
     DrawFormattedText(window, Q5_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
     DrawFormattedText(window, Q5_end2,screenXpixels * 0.63, screenYpixels * 0.69, grey);
     Screen('TextSize',window, InstrFontSmall);
     DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
     Screen('TextSize', window, InstrFont);
-    TaskInfo.Q5_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, black);
+    TaskInfo.Q5_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
     % Flip to the screen
     Screen('Flip', window);
     % Wait for a key press
@@ -442,15 +444,15 @@ else
     
     % Draw all the text in one go
     Screen('TextSize', window, InstrFont);
-    DrawFormattedText(window, Q6_q,'center', screenYpixels * 0.3, black);
-    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, black);
+    DrawFormattedText(window, Q6_q,'center', screenYpixels * 0.3, magenta);
+    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
     Screen('TextSize',window, InstrFontSmall);
     DrawFormattedText(window, Q6_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
     DrawFormattedText(window, Q6_end2,screenXpixels * 0.57, screenYpixels * 0.69, grey);
     Screen('TextSize',window, InstrFontSmall);
     DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
     Screen('TextSize', window, InstrFont);
-    TaskInfo.Q6_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, black);
+    TaskInfo.Q6_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
     % Flip to the screen
     Screen('Flip', window);
     % Wait for a key press
@@ -463,15 +465,15 @@ else
     
     % Draw all the text in one go
     Screen('TextSize', window, InstrFont);
-    DrawFormattedText(window, Q7_q,'center', screenYpixels * 0.3, black);
-    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, black);
+    DrawFormattedText(window, Q7_q,'center', screenYpixels * 0.3, magenta);
+    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
     Screen('TextSize',window, InstrFontSmall);
     DrawFormattedText(window, Q7_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
     DrawFormattedText(window, Q7_end2,screenXpixels * 0.78, screenYpixels * 0.69, grey);
     Screen('TextSize',window, InstrFontSmall);
     DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
     Screen('TextSize', window, InstrFont);
-    TaskInfo.Q7_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, black);
+    TaskInfo.Q7_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
     % Flip to the screen
     Screen('Flip', window);
     % Wait for a key press
@@ -479,7 +481,7 @@ else
 
     Screen('TextSize', window, InstrFont);
     DrawFormattedText(window, ['Recorded responses:\n\n', sprintf('\n%d',TaskInfo.Q0_ans), sprintf('\n%d',TaskInfo.Q1_ans), sprintf('\n%d',TaskInfo.Q2_ans), ...
-        sprintf('\n%d',TaskInfo.Q3_ans), sprintf('\n%d',TaskInfo.Q4_ans), sprintf('\n%d',TaskInfo.Q5_ans), sprintf('\n%d',TaskInfo.Q6_ans), sprintf('\n%d',TaskInfo.Q7_ans)],'center', 'center', black);
+        sprintf('\n%d',TaskInfo.Q3_ans), sprintf('\n%d',TaskInfo.Q4_ans), sprintf('\n%d',TaskInfo.Q5_ans), sprintf('\n%d',TaskInfo.Q6_ans), sprintf('\n%d',TaskInfo.Q7_ans)],'center', 'center', magenta);
     Screen('TextSize',window, InstrFontSmall);
     DrawFormattedText(window, 'Press RETURN to confirm or any other key \nto re-do this section','center', screenYpixels * 0.9, grey);
     Screen('Flip',window);
@@ -509,7 +511,7 @@ Instrline4 = '\n\nThe task will take about 10 minutes.';
 Instrline5 = '\n\nWe are about to start. Are you ready?';
 
 Screen('TextSize', window, InstrFont);
-DrawFormattedText(window, [Instrline1 Instrline2 Instrline3 Instrline4 Instrline5],'center', 'center', black);
+DrawFormattedText(window, [Instrline1 Instrline2 Instrline3 Instrline4 Instrline5],'center', 'center', magenta);
 Screen('TextSize',window, InstrFontSmall);
 DrawFormattedText(window, 'Press any key to continue','center', screenYpixels * 0.9, grey);
 Screen('Flip',window);
@@ -519,7 +521,7 @@ CheckTerminateTask;
 %start logging experiment start time
 log_startExperiment=GetSecs;
 
-DrawFormattedText(window, 'Waiting for the scanner...','center', 'center', black);
+DrawFormattedText(window, 'Waiting for the scanner...','center', 'center', magenta);
 Screen('Flip',window);
 curr_trigger = 0;
 log_triggertimes = [];
@@ -556,7 +558,7 @@ for i = 1:size(imge_indexes,1)
     CheckTerminateTask;
     this_seq_jitter=all_seq_jitter(ntrial);
     Screen('TextSize',window, FixCrossFont);
-    DrawFormattedText(window, '+','center', 'center', black);
+    DrawFormattedText(window, '+','center', 'center', grey);
     crossOnset=Screen('Flip',window);
     log_crossOnset = [log_crossOnset; crossOnset-log_startExperiment];
     WaitSecs(this_seq_jitter);
@@ -566,7 +568,7 @@ for i = 1:size(imge_indexes,1)
 end 
 
 Screen('TextSize',window, InstrFont);
-DrawFormattedText(window, 'We are done. Thank you!', 'center', 'center', black);
+DrawFormattedText(window, 'We are done. Thank you!', 'center', 'center', magenta);
 Screen('Flip',window);
 ShowCursor;
 ListenChar(0); % Restore keyboard output to Matlab 
@@ -611,7 +613,7 @@ function WaitForTrigger
                 log_triggertimes = [log_triggertimes; this_trgtime];
                 curr_trigger = curr_trigger + 1;
                 countdowntracker = 6 - curr_trigger;
-                DrawFormattedText(window, sprintf('Starting in: %d',countdowntracker),'center', 'center', black);
+                DrawFormattedText(window, sprintf('Starting in: %d',countdowntracker),'center', 'center', magenta);
                 Screen('Flip',window);
             end
     end
@@ -642,7 +644,7 @@ function CheckTerminateTask
                 % Write data to text file
                 writetable(saveT, sprintf('%sCR_fMRI_%s%d%s_%s_TERMINATED_log',save_path,participantID,sN,sessionVers,savetime));
                 Screen('TextSize',window, InstrFont);
-                DrawFormattedText(window, 'Task terminated...','center', 'center', black);
+                DrawFormattedText(window, 'Task terminated...','center', 'center', magenta);
                 Screen('Flip',window);
                 fprintf('\nTASK TEMINATED!\n');
                 sca;
@@ -650,7 +652,7 @@ function CheckTerminateTask
                 ShowCursor;
                 ListenChar(0); % Restore keyboard output to Matlab 
                 Screen('TextSize',window, InstrFont);
-                DrawFormattedText(window, 'Task terminated...','center', 'center', black);
+                DrawFormattedText(window, 'Task terminated...','center', 'center', magenta);
                 Screen('Flip',window);
                 fprintf('\nTASK TEMINATED!\n');
                 sca;
