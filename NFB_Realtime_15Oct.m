@@ -344,7 +344,7 @@ try
                             craving_blocks = craving_blocks + 1;
     
                             % craving CUE
-                            Text = 'While you view five images, \n try to increase your craving for the cannabis.';
+                            Text = 'While you view images, \n try to increase your craving for the cannabis.';
                             [cue_start, ~, ~, cue_start_TR, ~, cue_start_TBV_TR, ~] = WriteInstruction(Text, magenta, cue_dur_TR, feedback_dir, feedback_file_name);
                             Text = 'Score bar will increase with more craving.';
                             WriteInstruction(Text, magenta, cue_dur_TR - 2, feedback_dir, feedback_file_name);
@@ -459,7 +459,7 @@ try
                             craving_blocks = craving_blocks + 1;
     
                             % Downregulation CUE
-                            Text = 'While you view five images, \n try to decrease your craving for the cannabis.';
+                            Text = 'While you view images, \n try to decrease your craving for the cannabis.';
                             [cue_start, ~, ~, cue_start_TR, ~, cue_start_TBV_TR, ~] = WriteInstruction(Text, magenta, cue_dur_TR, feedback_dir, feedback_file_name);
                             Text = 'Score bar will decrease with less craving.'; 
                             WriteInstruction(Text, magenta, cue_dur_TR - 2, feedback_dir, feedback_file_name);
@@ -511,8 +511,7 @@ try
                             % VAS 
                             Text = sprintf(['Soon you will see a scale. \nPlease rate your current craving from 0 to 10: \n\n', ...
                                         '0 (No craving) <---> 10 (High craving) \n\n', ...
-                                        'Use <<LEFT>> button to DECREASE \n', ...
-                                        'Use <<RIGHT>> button to INCREASE \n\n', ...
+                                        'Use button box to rate your craving \n', ...
                                         'When finished, simply release the keys.']);
                             [cue_start, cue_end, cue_dur, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = WriteInstruction(Text, magenta, cue_dur_TR + 10, feedback_dir, feedback_file_name);
                             cue_timings = [cue_timings; cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1];
@@ -732,7 +731,7 @@ allImageIndices = 1:numImages;
 
 if isempty(selectedImageIndices) 
     % Define the prefixes as strings
-    prefixes = {'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10'}; 
+    prefixes = {'C11', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10'}; 
 
     % Choose a random prefix
     selectedPrefix = prefixes{randperm(length(prefixes), 1)};
