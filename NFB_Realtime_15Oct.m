@@ -123,7 +123,7 @@ try
     green = [0 255 0];
     
     % Open the Psychtoolbox window
-    TEST=0; 
+    TEST=1; 
     if TEST==1
         [window, scr_rect] = PsychImaging('OpenWindow', ChosenScreen, black, [0 0 800 600]);
     else
@@ -136,7 +136,7 @@ try
     [windowWidth, windowHeight] = Screen('WindowSize', window); 
 
     % Get a list of all image files in the image directory
-    imageDir = fullfile('C:\Users\NFB-user\Documents\NFB\Cue-reactivity latest\3-Current_MR_CRtask_v1_after2ndScan\Current_MR_CRtask_v1\MR_CRtask_v1\TRIGGER_C_Media');
+    imageDir = fullfile('C:\Users\NFB-user\Documents\NFB\Cue-reactivity latest\3-Current_MR_CRtask_v1_after2ndScan\Current_MR_CRtask_v1\MR_CRtask_v1\NFB_media');
     imageFiles = dir(fullfile(imageDir, 'C*.png')); % Assuming all images start with 'C'
 
     % Number of images available
@@ -234,13 +234,14 @@ try
       % N=Neutral Pic
       % D=down regulation
       % PR=practice 
-      blockOrder = { 'V', 'V'};
+      blockOrder = { 'U','N', 'D', 'N'};
 %            blockOrder = { 'F', 'N', 'F', 'V', 'F', 'U', 'N', 'F', 'V', 'F', 'D', 'N', 'F', 'V'};
 %       blockOrder = { 'R', 'V', 'F', 'U', 'F', 'N', 'F', 'V', 'F', 'D', 'F', 'N', 'F', 'V'};
 %     full run  %write number of volumes, runs, total time 
 %      blockOrder = { 'F', 'N', 'V', 'F', 'U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F', 'V', 'F', 'D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F', 'V'};
     % Declare cravingImageNumbers before the loop
     cravingImageNumbers = []; % Initialize as empty  
+    selectedPrefix = [];
     
     
    % Start of the experiment loop
@@ -382,7 +383,7 @@ try
                             
                         % Upregulation + feedback
                         
-                        [block_start, block_end, block_dur, block_start_TR, block_end_TR, block_start_TBV_TR, block_end_TBV_TR, image_onsets, image_durations, image_offsets, cravingImageNumbers, selectedImageIndices,allSelectedImages] = Upregulation_feedback(...
+                        [block_start, block_end, block_dur, block_start_TR, block_end_TR, block_start_TBV_TR, block_end_TBV_TR, image_onsets, image_durations, image_offsets, cravingImageNumbers, selectedPrefix, selectedImageIndices,allSelectedImages] = Upregulation_feedback(...
                             block_dur_TR, feedback_dir, feedback_file_name, imageTextures, p, selectedImageIndices, allSelectedImages, block_num, blockOrder);
                         fprintf(fileID5, '%f  %f  %f  %f  %f  %f\n', [block_start, block_end, block_dur, block_start_TBV_TR, block_end_TBV_TR, block_end_TBV_TR - block_start_TBV_TR + 1]);
                         Up_block_timings = [Up_block_timings;[block_start, block_end, block_dur, block_start_TBV_TR, block_end_TBV_TR, block_end_TBV_TR - block_start_TBV_TR + 1]];
@@ -438,7 +439,7 @@ try
 
                         % Neutral Control Condition
                         neutral_block_dur_TR = block_dur_TR; 
-                        [block_start, block_end, block_dur, block_start_TR, block_end_TR, block_start_TBV_TR, block_end_TBV_TR] = Neutral_control(neutral_block_dur_TR, feedback_dir, feedback_file_name, imageDir, cravingImageNumbers, p);
+                        [block_start, block_end, block_dur, block_start_TR, block_end_TR, block_start_TBV_TR, block_end_TBV_TR] = Neutral_control(neutral_block_dur_TR, feedback_dir, feedback_file_name, imageDir, cravingImageNumbers, selectedPrefix, p);
                         fprintf(fileID4,'%f  %f  %f  %f  %f  %f\n',[block_start,block_end,block_dur,block_start_TBV_TR,block_end_TBV_TR,block_end_TBV_TR-block_start_TBV_TR+1]);
                         Neutral_block_timings = [Neutral_block_timings;[block_start, block_end, block_dur, block_start_TBV_TR, block_end_TBV_TR, block_end_TBV_TR - block_start_TBV_TR + 1]];
                        
@@ -497,7 +498,7 @@ try
                         
                        
 
-                        [block_start, block_end, block_dur, block_start_TR, block_end_TR, block_start_TBV_TR, block_end_TBV_TR, image_onsets, image_durations, image_offsets, cravingImageNumbers, selectedImageIndices,allSelectedImages] = Downregulation_feedback(...
+                        [block_start, block_end, block_dur, block_start_TR, block_end_TR, block_start_TBV_TR, block_end_TBV_TR, image_onsets, image_durations, image_offsets, cravingImageNumbers, selectedPrefix, selectedImageIndices,allSelectedImages] = Downregulation_feedback(...
                             block_dur_TR, feedback_dir, feedback_file_name, imageTextures, p, selectedImageIndices, allSelectedImages, block_num, blockOrder);
                         fprintf(fileID6, '%f  %f  %f  %f  %f  %f\n', [block_start, block_end, block_dur, block_start_TBV_TR, block_end_TBV_TR, block_end_TBV_TR - block_start_TBV_TR + 1]);
                         Down_block_timings = [Down_block_timings; [block_start, block_end, block_dur, block_start_TBV_TR, block_end_TBV_TR, block_end_TBV_TR - block_start_TBV_TR + 1]];
@@ -693,7 +694,7 @@ block_end_tbv_tr = current_TBV_tr;
 end
 
 %%%%%%%%%%% Modified Upregulation_feedback function %%%%%%%%%%%
-function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_end_tbv_tr, image_onsets, image_durations, image_offsets, cravingImageNumbers, selectedImageIndices,allSelectedImages] = Upregulation_feedback(num_trs, folder_path, file_prefix, imageTextures, p, selectedImageIndices, allSelectedImages, block_num, blockOrder)  
+function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_end_tbv_tr, image_onsets, image_durations, image_offsets, cravingImageNumbers, selectedPrefix, selectedImageIndices,allSelectedImages] = Upregulation_feedback(num_trs, folder_path, file_prefix, imageTextures, p, selectedImageIndices, allSelectedImages, block_num, blockOrder)  
     global window start_time current_TBV_tr TR windowHeight FB_timings
 
     bo = GetSecs() - start_time;
@@ -705,26 +706,58 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
     imageDurationSecs = 10; 
 
     % Get a list of all image files in the image directory
-    imageDir = fullfile(pwd, 'TRIGGER_C_Media');
+    imageDir = fullfile('C:\Users\NFB-user\Documents\NFB\Cue-reactivity latest\3-Current_MR_CRtask_v1_after2ndScan\Current_MR_CRtask_v1\MR_CRtask_v1\NFB_media');
     imageFiles = dir(fullfile(imageDir, 'C*.png')); 
     numImages = length(imageFiles);
-    
+    % Extract filenames into a cell array for easier manipulation
+    imageFilenames = {imageFiles.name};
    
     
     % Randomly select 5 unique images for this block, ensuring no repetition within a block_num and between up/downregulation blocks
-    allImageIndices = 1:numImages; 
-    if isempty(selectedImageIndices) 
-        selectedImageIndices = randperm(numImages, 3); 
-    else
-        remainingImageIndices = setdiff(allImageIndices, allSelectedImages); 
-        if numel(remainingImageIndices) < 3
-            warning('Not enough unique images left for this block_num. Reusing some images.');
-            remainingImageIndices = allImageIndices; 
-        end
-        selectedImageIndices = remainingImageIndices(randperm(numel(remainingImageIndices), 3));
-    end
+%     allImageIndices = 1:numImages; 
+%     if isempty(selectedImageIndices) 
+%         selectedImageIndices = randperm(numImages, 3); 
+%     else
+%         remainingImageIndices = setdiff(allImageIndices, allSelectedImages); 
+%         if numel(remainingImageIndices) < 3
+%             warning('Not enough unique images left for this block_num. Reusing some images.');
+%             remainingImageIndices = allImageIndices; 
+%         end
+%         selectedImageIndices = remainingImageIndices(randperm(numel(remainingImageIndices), 3));
+%     end
+% 
+%     allSelectedImages = [allSelectedImages, selectedImageIndices];
+allImageIndices = 1:numImages; 
 
-    allSelectedImages = [allSelectedImages, selectedImageIndices];
+
+if isempty(selectedImageIndices) 
+    % Define the prefixes as strings
+    prefixes = {'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10'}; 
+
+    % Choose a random prefix
+    selectedPrefix = prefixes{randperm(length(prefixes), 1)};
+
+    % Select all images with the selected prefix (adjust this based on your actual image index pattern)
+    allMatchingIndices = find(startsWith(imageFilenames, selectedPrefix)); 
+    selectedImageIndices = allMatchingIndices(randperm(length(allMatchingIndices), 3));
+else
+    remainingImageIndices = setdiff(allImageIndices, allSelectedImages); 
+
+    % Get the remaining prefixes (this part might need adjustments depending on how you track remaining images)
+    remainingImageFilenames = imageFilenames(remainingImageIndices);
+    remainingPrefixes = unique(extractBefore(remainingImageFilenames, 3)); % Extract first 2 characters ('c1', 'c2', etc.)
+
+    % Choose a random prefix from the remaining ones
+    selectedPrefix = remainingPrefixes{randperm(length(remainingPrefixes), 1)};
+
+    allMatchingIndices = find(startsWith(imageFilenames, selectedPrefix)); 
+    selectedImageIndices = allMatchingIndices(randperm(length(allMatchingIndices), 3)); 
+end
+
+allSelectedImages = [allSelectedImages, selectedImageIndices];
+
+   
+
     disp('Selected image indices for Downregulation block:');
     disp(allSelectedImages);
     disp(selectedImageIndices);
@@ -795,7 +828,7 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
     end
 end
 %%%%%%%%%%% Downregulation_feedback function %%%%%%%%%%%
-function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_end_tbv_tr, image_onsets, image_durations, image_offsets, cravingImageNumbers, selectedImageIndices,allSelectedImages] = Downregulation_feedback(num_trs, folder_path, file_prefix, imageTextures, p, selectedImageIndices, allSelectedImages, block_num, blockOrder)  
+function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_end_tbv_tr, image_onsets, image_durations, image_offsets, cravingImageNumbers, selectedPrefix, selectedImageIndices,allSelectedImages] = Downregulation_feedback(num_trs, folder_path, file_prefix, imageTextures, p, selectedImageIndices, allSelectedImages, block_num, blockOrder)  
     global window start_time current_TBV_tr TR windowHeight FB_timings 
 
     bo = GetSecs() - start_time;
@@ -807,25 +840,55 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
     imageDurationSecs = 10; 
 
     % Get a list of all image files in the image directory
-    imageDir = fullfile(pwd, 'TRIGGER_C_Media');
+    imageDir = fullfile('C:\Users\NFB-user\Documents\NFB\Cue-reactivity latest\3-Current_MR_CRtask_v1_after2ndScan\Current_MR_CRtask_v1\MR_CRtask_v1\NFB_media');
     imageFiles = dir(fullfile(imageDir, 'C*.png')); 
     numImages = length(imageFiles);
+    % Extract filenames into a cell array for easier manipulation
+    imageFilenames = {imageFiles.name};
 
   
     % Randomly select 5 unique images for this block, ensuring no repetition within a block_num and between up/downregulation blocks
-    allImageIndices = 1:numImages; 
-    if isempty(selectedImageIndices) 
-        selectedImageIndices = randperm(numImages, 3); 
-    else
-        remainingImageIndices = setdiff(allImageIndices, allSelectedImages); 
-        if numel(remainingImageIndices) < 3
-            warning('Not enough unique images left for this block_num. Reusing some images.');
-            remainingImageIndices = allImageIndices; 
-        end
-        selectedImageIndices = remainingImageIndices(randperm(numel(remainingImageIndices), 3));
-    end
+%     allImageIndices = 1:numImages; 
+%     if isempty(selectedImageIndices) 
+%         selectedImageIndices = randperm(numImages, 3); 
+%     else
+%         remainingImageIndices = setdiff(allImageIndices, allSelectedImages); 
+%         if numel(remainingImageIndices) < 3
+%             warning('Not enough unique images left for this block_num. Reusing some images.');
+%             remainingImageIndices = allImageIndices; 
+%         end
+%         selectedImageIndices = remainingImageIndices(randperm(numel(remainingImageIndices), 3));
+%     end
+% 
+%     allSelectedImages = [allSelectedImages, selectedImageIndices]; 
+allImageIndices = 1:numImages; 
 
-    allSelectedImages = [allSelectedImages, selectedImageIndices]; 
+
+if isempty(selectedImageIndices) 
+    % Define the prefixes as strings
+    prefixes = {'C11', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10'}; 
+
+    % Choose a random prefix
+    selectedPrefix = prefixes{randperm(length(prefixes), 1)};
+
+    % Select all images with the selected prefix (adjust this based on your actual image index pattern)
+    allMatchingIndices = find(startsWith(imageFilenames, selectedPrefix)); 
+    selectedImageIndices = allMatchingIndices(randperm(length(allMatchingIndices), 3));
+else
+    remainingImageIndices = setdiff(allImageIndices, allSelectedImages); 
+
+    % Get the remaining prefixes (this part might need adjustments depending on how you track remaining images)
+    remainingImageFilenames = imageFilenames(remainingImageIndices);
+    remainingPrefixes = unique(extractBefore(remainingImageFilenames, 3)); % Extract first 2 characters ('c1', 'c2', etc.)
+
+    % Choose a random prefix from the remaining ones
+    selectedPrefix = remainingPrefixes{randperm(length(remainingPrefixes), 1)};
+
+    allMatchingIndices = find(startsWith(imageFilenames, selectedPrefix)); 
+    selectedImageIndices = allMatchingIndices(randperm(length(allMatchingIndices), 3)); 
+end
+
+allSelectedImages = [allSelectedImages, selectedImageIndices];
     disp('Selected image indices for Downregulation block:');
     disp(allSelectedImages);
     disp(selectedImageIndices);
@@ -900,7 +963,7 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
     end
 end
 %%%%%%%%%%%%%%%%%%%%
-function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_end_tbv_tr] = Neutral_control(num_trs, folder_path, file_prefix, imageDir, cravingImageNumbers, p)
+function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_end_tbv_tr] = Neutral_control(num_trs, folder_path, file_prefix, imageDir, cravingImageNumbers, selectedPrefix, p)
     global window start_time current_TBV_tr TR windowHeight pp_no run_no block_num blockOrder selectedImageIndices selectedNeutralImageIndices allSelectedImages
     bo = GetSecs() - start_time;
     block_start_tr = round(bo / TR) + 1;
@@ -911,17 +974,17 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
     numCravingImages = length(cravingImageFiles);
     numNeutralImages = length(neutralImageFiles);
     
-    cravingImageNumbers = cravingImageNumbers;
+    %cravingImageNumbers = cravingImageNumbers;
     
     % Logic to select images based on block order
-    if isempty(cravingImageNumbers)  % If cravingImageNumbers is empty (neutral block first)
+    if isempty(selectedPrefix)  % If cravingImageNumbers is empty (neutral block first)
         % Select 5 random neutral images, ensuring no repetition within a block_num
         allNeutralImageIndices = 1:numNeutralImages;
         if isempty(selectedNeutralImageIndices)
-            selectedNeutralImageIndices = randperm(numNeutralImages, 3);
+            selectedNeutralImageIndices = randperm(numNeutralImages, 1);
         else
             remainingNeutralImageIndices = setdiff(allNeutralImageIndices, selectedNeutralImageIndices);
-            selectedNeutralImageIndices = remainingNeutralImageIndices(randperm(numel(remainingNeutralImageIndices), 3));
+            selectedNeutralImageIndices = remainingNeutralImageIndices(randperm(numel(remainingNeutralImageIndices), 1));
         end
         % Store the numbers from the selected neutral image file names 
         neutralImageNumbers = [];
@@ -930,18 +993,27 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
             neutralImageNumbers(k) = str2double(imageName(2:end));
         end
         selectedImageIndices = selectedNeutralImageIndices; 
+%     else  % If cravingImageNumbers is not empty (craving block first)
+%         selectedImageIndices = [];
+%         for k = 1:numel(selectedPrefix)
+%             for j = 1:numNeutralImages
+%                 [~, imageName, ~] = fileparts(neutralImageFiles(j).name);
+%                 if str2double(imageName(2:end)) == selectedPrefix(k)
+%                     selectedImageIndices(k) = j;
     else  % If cravingImageNumbers is not empty (craving block first)
         selectedImageIndices = [];
-        for k = 1:numel(cravingImageNumbers)
-            for j = 1:numNeutralImages
-                [~, imageName, ~] = fileparts(neutralImageFiles(j).name);
-                if str2double(imageName(2:end)) == cravingImageNumbers(k)
-                    selectedImageIndices(k) = j;
-                    break;
-                end
-            end
-            if isempty(selectedImageIndices(k))
-                warning('Corresponding neutral image not found for craving image number %d', cravingImageNumbers(k));
+        
+        % Convert the numeric part of the selectedPrefix to match the craving image numbers
+        prefixNumber = str2double(selectedPrefix(2:end));  % Extract the numeric part of the selectedPrefix (e.g., 'C5' -> 5)
+        
+        for j = 1:numNeutralImages
+        % Get the neutral image name (without the file extension)
+            [~, imageName, ~] = fileparts(neutralImageFiles(j).name);
+            
+            % Compare the numeric part of the neutral image with the selectedPrefix's number
+            if str2double(imageName(2:end)) == prefixNumber  % Match the numeric part with the selectedPrefix
+                selectedImageIndices = j;  % Store the index of the first matching neutral image
+                break;  % Exit the loop after finding the first match
             end
         end
     end
