@@ -731,7 +731,7 @@ allImageIndices = 1:numImages;
 
 if isempty(selectedImageIndices) 
     % Define the prefixes as strings
-    prefixes = {'C11', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10'}; 
+    prefixes = {'C10', 'C20', 'C30', 'C40', 'C50', 'C60', 'C70', 'C80', 'C90', 'C99'}; 
 
     % Choose a random prefix
     selectedPrefix = prefixes{randperm(length(prefixes), 1)};
@@ -744,7 +744,7 @@ else
 
     % Get the remaining prefixes (this part might need adjustments depending on how you track remaining images)
     remainingImageFilenames = imageFilenames(remainingImageIndices);
-    remainingPrefixes = unique(extractBefore(remainingImageFilenames, 3)); % Extract first 2 characters ('c1', 'c2', etc.)
+    remainingPrefixes = unique(extractBefore(remainingImageFilenames, 4)); % Extract first 3 characters ('c10', 'c99', etc.)
 
     % Choose a random prefix from the remaining ones
     selectedPrefix = remainingPrefixes{randperm(length(remainingPrefixes), 1)};
@@ -757,7 +757,7 @@ allSelectedImages = [allSelectedImages, selectedImageIndices];
 
    
 
-    disp('Selected image indices for Downregulation block:');
+    disp('Selected image indices for upregulation block:');
     disp(allSelectedImages);
     disp(selectedImageIndices);
 
@@ -865,7 +865,7 @@ allImageIndices = 1:numImages;
 
 if isempty(selectedImageIndices) 
     % Define the prefixes as strings
-    prefixes = {'C11', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10'}; 
+    prefixes = {'C10', 'C20', 'C30', 'C40', 'C50', 'C60', 'C70', 'C80', 'C90', 'C99'}; 
 
     % Choose a random prefix
     selectedPrefix = prefixes{randperm(length(prefixes), 1)};
@@ -878,7 +878,7 @@ else
 
     % Get the remaining prefixes (this part might need adjustments depending on how you track remaining images)
     remainingImageFilenames = imageFilenames(remainingImageIndices);
-    remainingPrefixes = unique(extractBefore(remainingImageFilenames, 3)); % Extract first 2 characters ('c1', 'c2', etc.)
+    remainingPrefixes = unique(extractBefore(remainingImageFilenames, 4)); % Extract first 3 characters ('c10', 'c99', etc.)
 
     % Choose a random prefix from the remaining ones
     selectedPrefix = remainingPrefixes{randperm(length(remainingPrefixes), 1)};
@@ -1024,7 +1024,7 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
         img = imread(imagePath);
         imageTextures(k) = Screen('MakeTexture', window, img);
     end
-    imageDurationSecs = 10;
+    imageDurationSecs = 30;
 
     % Task loop 
     for imageIndex = 1:numel(imageTextures)
@@ -1565,11 +1565,6 @@ function [block_start, block_end, block_dur, block_start_TR, block_end_TR, block
             Screen('Flip', window);
         end
 
-
-    % If no key is pressed, terminate execution
-    if ~keyIsDown 
-        disp('Experiment finished after the final VAS block.'); 
-    end
 
     % Get the ending time of the block
     block_end = GetSecs() - start_time;
