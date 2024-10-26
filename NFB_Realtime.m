@@ -29,7 +29,7 @@ cue_dur_TR = 5; % Duration of the cue in TRs
 %% Needs change 
 pp_no = 20;
 pp_name = 'Valentina';
-num_blocks = 2; % Number of times to repeat the craving task and VAS scale
+num_blocks = 1; % Number of times to repeat the craving task and VAS scale
 
 input('Press Enter to start >>> ','s'); % Wait for user input to start
 
@@ -234,7 +234,7 @@ try
       % N=Neutral Pic
       % D=down regulation
       % PR=practice 
-      blockOrder = { 'U','N', 'D', 'N'};
+      blockOrder = { 'N','U', 'N', 'D', 'N'};
 %            blockOrder = { 'F', 'N', 'F', 'V', 'F', 'U', 'N', 'F', 'V', 'F', 'D', 'N', 'F', 'V'};
 %       blockOrder = { 'R', 'V', 'F', 'U', 'F', 'N', 'F', 'V', 'F', 'D', 'F', 'N', 'F', 'V'};
 %     full run  %write number of volumes, runs, total time 
@@ -797,7 +797,7 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
     end
 end
 %%%%%%%%%%% Downregulation_feedback function %%%%%%%%%%%
-function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_end_tbv_tr, image_onsets, image_durations, image_offsets, cravingImageNumbers, selectedPrefix, selectedImageIndices,allSelectedImages] = Downregulation_feedback(num_trs, folder_path, file_prefix, imageTextures, p, selectedImageIndices, allSelectedImages, block_num, blockOrder)  
+function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_end_tbv_tr, image_onsets, image_durations, image_offsets, cravingImageNumbers, selectedImageIndices,allSelectedImages] = Downregulation_feedback(num_trs, folder_path, file_prefix, imageTextures, p, selectedImageIndices, allSelectedImages, block_num, blockOrder)  
     global window start_time current_TBV_tr TR windowHeight FB_timings 
 
     bo = GetSecs() - start_time;
@@ -918,13 +918,15 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
     
     % Logic to select images based on block order
     if isempty(cravingImageNumbers)  % If cravingImageNumbers is empty (neutral block first)
-        % Select 5 random neutral images, ensuring no repetition within a block_num
+        % Select 1 random neutral images, ensuring no repetition within a block_num
         allNeutralImageIndices = 1:numNeutralImages;
         if isempty(selectedNeutralImageIndices)
             selectedNeutralImageIndices = randperm(numNeutralImages, 1);
+            imageDurationSecs = 60;
         else
             remainingNeutralImageIndices = setdiff(allNeutralImageIndices, selectedNeutralImageIndices);
             selectedNeutralImageIndices = remainingNeutralImageIndices(randperm(numel(remainingNeutralImageIndices), 3));
+            imageDurationSecs = 10;
         end
         % Store the numbers from the selected neutral image file names 
         neutralImageNumbers = [];
@@ -936,6 +938,7 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
 
     else  % If cravingImageNumbers is not empty (craving block first)
         selectedImageIndices = [];
+        imageDurationSecs = 10;
         for k = 1:numel(cravingImageNumbers)
             for j = 1:numNeutralImages
                 [~, imageName, ~] = fileparts(neutralImageFiles(j).name);
@@ -957,7 +960,7 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
         img = imread(imagePath);
         imageTextures(k) = Screen('MakeTexture', window, img);
     end
-    imageDurationSecs = 10;
+    
 
     % Task loop 
     for imageIndex = 1:numel(imageTextures)
