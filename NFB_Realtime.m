@@ -234,7 +234,7 @@ try
       % N=Neutral Pic
       % D=down regulation
       % PR=practice 
-      blockOrder = { 'N','U', 'N', 'D', 'N'};
+      blockOrder = { 'N','D', 'N', 'D', 'U'};
 %            blockOrder = { 'F', 'N', 'F', 'V', 'F', 'U', 'N', 'F', 'V', 'F', 'D', 'N', 'F', 'V'};
 %       blockOrder = { 'R', 'V', 'F', 'U', 'F', 'N', 'F', 'V', 'F', 'D', 'F', 'N', 'F', 'V'};
 %     full run  %write number of volumes, runs, total time 
@@ -1174,11 +1174,11 @@ function rect_num = DrawFeedbackDownregulation(score)
 %     Screen('FillRect', window, rect_color_black', all_rect_coords(:, 21:40));
     
     % Fill the first 20 rectangles (1-20) with magenta initially
-    Screen('FillRect', window, rect_color_black', all_rect_coords(:, 1:20));
+    Screen('FillRect', window, rect_color_white', all_rect_coords(:, 1:20));
     
     % Fill the first 'score' number of rectangles (1-20) with black based on the score
     if score > 0 && score <= 20
-        Screen('FillRect', window, repmat(rect_color_white', [1, score]), all_rect_coords(:, (20 - score+1):20));
+        Screen('FillRect', window, repmat(rect_color_black', [1, score]), all_rect_coords(:, (20 - score+1):20));
     end
 
  
