@@ -119,6 +119,7 @@ InstrFontSmall = 44;
 FixCrossFont = 500;
 
 % Define colors
+
 white = WhiteIndex(numscreen);
 black = BlackIndex(numscreen);
 grey = GrayIndex(numscreen);
@@ -278,8 +279,8 @@ end
 WaitSecs(0.1);
 Screen('TextSize',window, InstrFont);
 DrawFormattedText(window, 'Stimuli loaded.', 'center', 'center', magenta);
-Screen('TextSize',window, InstrFontSmall);
-DrawFormattedText(window, 'Press any key to continue','center', screenYpixels * 0.7, grey);
+% Screen('TextSize',window, InstrFontSmall);
+% DrawFormattedText(window, 'Press any key to continue','center', screenYpixels * 0.7, grey);
 Screen('Flip',window);
 % Wait for a key press
 CheckTerminateTask;
@@ -298,186 +299,217 @@ else
     while redo < 1
     % VAS questions
     Screen('TextSize',window, InstrFont);
-    DrawFormattedText(window, 'Please respond to \nthe following questions verbally', 'center', 'center', magenta);
-    Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window, 'Press any key to continue','center', screenYpixels * 0.7, grey);
+    DrawFormattedText(window, 'Please respond to \nthe following questions', 'center', 'center', magenta);
+%     Screen('TextSize',window, InstrFontSmall);
+%     DrawFormattedText(window, 'Press any key to continue','center', screenYpixels * 0.7, grey);
     Screen('Flip',window);
     CheckTerminateTask;
     % Wait for a key press
     KbStrokeWait(-1);
 
     
-    % Q0
-    Q0_q = 'How much do you feel like smoking cannabis \non a scale of 1 = Not at all to 10 = Extremely?';
-    Q_num = '1     2     3     4     5     6     7     8     9     10';
-    Q0_end1 = 'Not at all';
-    Q0_end2 = 'Extremely';
-    
-    
-    % Draw all the text in one go
-    Screen('TextSize', window, InstrFont);
-    DrawFormattedText(window, Q0_q,'center', screenYpixels * 0.3, magenta);
-    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
-    Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window, Q0_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
-    DrawFormattedText(window, Q0_end2,screenXpixels * 0.74, screenYpixels * 0.69, grey);
-    Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
-    Screen('TextSize', window, InstrFont);
-    TaskInfo.Q0_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
-    % Flip to the screen
-    Screen('Flip', window);
-    % Wait for a key press
-    CheckTerminateTask;
+%     % Q0
+%     Q0_q = 'How much do you feel like smoking cannabis \non a scale of 1 = Not at all to 10 = Extremely?';
+%     Q_num = '1     2     3     4     5     6     7     8     9     10';
+%     Q0_end1 = 'Not at all';
+%     Q0_end2 = 'Extremely';
+%     
+%     
+%     % Draw all the text in one go
+%     Screen('TextSize', window, InstrFont);
+%     DrawFormattedText(window, Q0_q,'center', screenYpixels * 0.3, magenta);
+%     DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
+%     Screen('TextSize',window, InstrFontSmall);
+%     DrawFormattedText(window, Q0_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
+%     DrawFormattedText(window, Q0_end2,screenXpixels * 0.74, screenYpixels * 0.69, grey);
+%     Screen('TextSize',window, InstrFontSmall);
+%     DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
+%     Screen('TextSize', window, InstrFont);
+%     TaskInfo.Q0_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
+%     % Flip to the screen
+%     Screen('Flip', window);
+%     % Wait for a key press
+%     CheckTerminateTask;
+% 
+%     
+%     % Q1
+%     Q1_q = 'How strong is your urge to smoke cannabis right now \non a scale of \n1 = Not at all to 10 = Very severe urge?';
+%     Q1_end1 = 'Not at all';
+%     Q1_end2 = 'Very severe urge';
+%     
+%     % Draw all the text in one go
+%     Screen('TextSize', window, InstrFont);
+%     DrawFormattedText(window, Q1_q,'center', screenYpixels * 0.3, magenta);
+%     DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
+%     Screen('TextSize',window, InstrFontSmall);
+%     DrawFormattedText(window, Q1_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
+%     DrawFormattedText(window, Q1_end2,screenXpixels * 0.64, screenYpixels * 0.69, grey);
+%     Screen('TextSize',window, InstrFontSmall);
+%     DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
+%     Screen('TextSize', window, InstrFont);
+%     TaskInfo.Q1_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
+%     
+%     % Flip to the screen
+%     Screen('Flip', window);
+%     % Wait for a key press
+%     CheckTerminateTask;
+% 
+% 
+%     % Q2
+%     Q2_q = 'What is your level of relaxation-tension \non a scale of \n1 = Absolutely no tension to 10 = Extremely tense?';
+%     Q2_end1 = 'Absolutely no tension';
+%     Q2_end2 = 'Extremely tense';
+%     
+%     % Draw all the text in one go
+%     Screen('TextSize', window, InstrFont);
+%     DrawFormattedText(window, Q2_q,'center', screenYpixels * 0.3, magenta);
+%     DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
+%     Screen('TextSize',window, InstrFontSmall);
+%     DrawFormattedText(window, Q2_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
+%     DrawFormattedText(window, Q2_end2,screenXpixels * 0.66, screenYpixels * 0.69, grey);
+%     Screen('TextSize',window, InstrFontSmall);
+%     DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
+%     Screen('TextSize', window, InstrFont);
+%     TaskInfo.Q2_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
+%     % Flip to the screen
+%     Screen('Flip', window);
+%     % Wait for a key press
+%     CheckTerminateTask;
+% 
+%     % Q3
+%     Q3_q = 'How distracted or focused are you \non a scale of \n1 = Very distracted to 10 = Very focused?';
+%     Q3_end1 = 'Very distracted';
+%     Q3_end2 = 'Very focused';
+%     
+%     % Draw all the text in one go
+%     Screen('TextSize', window, InstrFont);
+%     DrawFormattedText(window, Q3_q,'center', screenYpixels * 0.3, magenta);
+%     DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
+%     Screen('TextSize',window, InstrFontSmall);
+%     DrawFormattedText(window, Q3_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
+%     DrawFormattedText(window, Q3_end2,screenXpixels * 0.71, screenYpixels * 0.69, grey);
+%     Screen('TextSize',window, InstrFontSmall);
+%     DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
+%     Screen('TextSize', window, InstrFont);
+%     TaskInfo.Q3_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
+%     % Flip to the screen
+%     Screen('Flip', window);
+%     % Wait for a key press
+%     CheckTerminateTask;
+% 
+%     % Q4
+%     Q4_q = 'How aware are you of whatever arises \nin your moment to moment awareness on a scale of \n1 = Not aware to 10 = Very aware?';
+%     Q4_end1 = 'Not aware';
+%     Q4_end2 = 'Very aware';
+%     
+%     % Draw all the text in one go
+%     Screen('TextSize', window, InstrFont);
+%     DrawFormattedText(window, Q4_q,'center', screenYpixels * 0.3, magenta);
+%     DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
+%     Screen('TextSize',window, InstrFontSmall);
+%     DrawFormattedText(window, Q4_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
+%     DrawFormattedText(window, Q4_end2,screenXpixels * 0.72, screenYpixels * 0.69, grey);
+%     Screen('TextSize',window, InstrFontSmall);
+%     DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
+%     Screen('TextSize', window, InstrFont);
+%     TaskInfo.Q4_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
+%     % Flip to the screen
+%     Screen('Flip', window);
+%     % Wait for a key press
+%     CheckTerminateTask;
+%     % Q5
+%     Q5_q = ' How vivid is your experience \non a scale of \n1 = Not vivid, dull, hazy to 10 = Vivid, sharp, clear?';
+%     Q5_end1 = 'Not vivid, dull, hazy';
+%     Q5_end2 = 'Vivid, sharp, clear';
+%     
+%     % Draw all the text in one go
+%     Screen('TextSize', window, InstrFont);
+%     DrawFormattedText(window, Q5_q,'center', screenYpixels * 0.3, magenta);
+%     DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
+%     Screen('TextSize',window, InstrFontSmall);
+%     DrawFormattedText(window, Q5_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
+%     DrawFormattedText(window, Q5_end2,screenXpixels * 0.63, screenYpixels * 0.69, grey);
+%     Screen('TextSize',window, InstrFontSmall);
+%     DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
+%     Screen('TextSize', window, InstrFont);
+%     TaskInfo.Q5_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
+%     % Flip to the screen
+%     Screen('Flip', window);
+%     % Wait for a key press
+%     CheckTerminateTask;
+% 
+%     % Q6
+%     Q6_q = 'How is your mental state \non a scale of \n1 = Sluggish/drowsy to 10 = Agitated/racing/restless?';
+%     Q6_end1 = 'Sluggish/drowsy';
+%     Q6_end2 = 'Agitated/racing/restless';
+%     
+%     % Draw all the text in one go
+%     Screen('TextSize', window, InstrFont);
+%     DrawFormattedText(window, Q6_q,'center', screenYpixels * 0.3, magenta);
+%     DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
+%     Screen('TextSize',window, InstrFontSmall);
+%     DrawFormattedText(window, Q6_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
+%     DrawFormattedText(window, Q6_end2,screenXpixels * 0.57, screenYpixels * 0.69, grey);
+%     Screen('TextSize',window, InstrFontSmall);
+%     DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
+%     Screen('TextSize', window, InstrFont);
+%     TaskInfo.Q6_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
+%     % Flip to the screen
+%     Screen('Flip', window);
+%     % Wait for a key press
+%     CheckTerminateTask;
+% 
+%     % Q7
+%     Q7_q = 'How is your mental effort \non a scale of \n1 = Effortless to 10 = Forced?';
+%     Q7_end1 = 'Effortless';
+%     Q7_end2 = 'Forced';
+%     
+%     % Draw all the text in one go
+%     Screen('TextSize', window, InstrFont);
+%     DrawFormattedText(window, Q7_q,'center', screenYpixels * 0.3, magenta);
+%     DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
+%     Screen('TextSize',window, InstrFontSmall);
+%     DrawFormattedText(window, Q7_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
+%     DrawFormattedText(window, Q7_end2,screenXpixels * 0.78, screenYpixels * 0.69, grey);
+%     Screen('TextSize',window, InstrFontSmall);
+%     DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
+%     Screen('TextSize', window, InstrFont);
+%     TaskInfo.Q7_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
+%     % Flip to the screen
+%     Screen('Flip', window);
+%     % Wait for a key press
+%     CheckTerminateTask;
 
-    
+% Q0
+    TaskInfo.Q0_ans = displayVAS(window, windowRect, screenYpixels, 'How much do you feel like smoking cannabis?', 'Not at all', 'Extremely')
+
     % Q1
-    Q1_q = 'How strong is your urge to smoke cannabis right now \non a scale of \n1 = Not at all to 10 = Very severe urge?';
-    Q1_end1 = 'Not at all';
-    Q1_end2 = 'Very severe urge';
-    
-    % Draw all the text in one go
-    Screen('TextSize', window, InstrFont);
-    DrawFormattedText(window, Q1_q,'center', screenYpixels * 0.3, magenta);
-    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
-    Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window, Q1_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
-    DrawFormattedText(window, Q1_end2,screenXpixels * 0.64, screenYpixels * 0.69, grey);
-    Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
-    Screen('TextSize', window, InstrFont);
-    TaskInfo.Q1_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
-    
-    % Flip to the screen
-    Screen('Flip', window);
-    % Wait for a key press
-    CheckTerminateTask;
+    TaskInfo.Q1_ans = displayVAS(window, windowRect, screenYpixels, 'How strong is your urge to smoke cannabis right now \non a scale of \n0 = Not at all to 10 = Very severe urge?', 'Not at all', 'Very severe urge')
 
-
+    
     % Q2
-    Q2_q = 'What is your level of relaxation-tension \non a scale of \n1 = Absolutely no tension to 10 = Extremely tense?';
-    Q2_end1 = 'Absolutely no tension';
-    Q2_end2 = 'Extremely tense';
-    
-    % Draw all the text in one go
-    Screen('TextSize', window, InstrFont);
-    DrawFormattedText(window, Q2_q,'center', screenYpixels * 0.3, magenta);
-    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
-    Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window, Q2_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
-    DrawFormattedText(window, Q2_end2,screenXpixels * 0.66, screenYpixels * 0.69, grey);
-    Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
-    Screen('TextSize', window, InstrFont);
-    TaskInfo.Q2_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
-    % Flip to the screen
-    Screen('Flip', window);
-    % Wait for a key press
-    CheckTerminateTask;
+    TaskInfo.Q2_ans = displayVAS(window, windowRect, screenYpixels, 'What is your level of relaxation-tension \non a scale of \n0 = Absolutely no tension to 10 = Extremely tense?', 'Absolutely \nno tension', 'Extremely tense')
 
-    % Q3
-    Q3_q = 'How distracted or focused are you \non a scale of \n1 = Very distracted to 10 = Very focused?';
-    Q3_end1 = 'Very distracted';
-    Q3_end2 = 'Very focused';
     
-    % Draw all the text in one go
-    Screen('TextSize', window, InstrFont);
-    DrawFormattedText(window, Q3_q,'center', screenYpixels * 0.3, magenta);
-    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
-    Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window, Q3_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
-    DrawFormattedText(window, Q3_end2,screenXpixels * 0.71, screenYpixels * 0.69, grey);
-    Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
-    Screen('TextSize', window, InstrFont);
-    TaskInfo.Q3_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
-    % Flip to the screen
-    Screen('Flip', window);
-    % Wait for a key press
-    CheckTerminateTask;
+    % Q3
+    TaskInfo.Q3_ans = displayVAS(window, windowRect, screenYpixels, 'How distracted or focused are you \non a scale of \n0 = Very distracted to 10 = Very focused?', 'Very \ndistracted', 'Very focused')
+
+    
 
     % Q4
-    Q4_q = 'How aware are you of whatever arises \nin your moment to moment awareness on a scale of \n1 = Not aware to 10 = Very aware?';
-    Q4_end1 = 'Not aware';
-    Q4_end2 = 'Very aware';
-    
-    % Draw all the text in one go
-    Screen('TextSize', window, InstrFont);
-    DrawFormattedText(window, Q4_q,'center', screenYpixels * 0.3, magenta);
-    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
-    Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window, Q4_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
-    DrawFormattedText(window, Q4_end2,screenXpixels * 0.72, screenYpixels * 0.69, grey);
-    Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
-    Screen('TextSize', window, InstrFont);
-    TaskInfo.Q4_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
-    % Flip to the screen
-    Screen('Flip', window);
-    % Wait for a key press
-    CheckTerminateTask;
+    TaskInfo.Q4_ans = displayVAS(window, windowRect, screenYpixels, 'How aware are you of whatever arises \nin your moment to moment awareness on a scale of \n0 = Not aware to 10 = Very aware?', 'Not aware', 'Very aware')
+
+   
     % Q5
-    Q5_q = ' How vivid is your experience \non a scale of \n1 = Not vivid, dull, hazy to 10 = Vivid, sharp, clear?';
-    Q5_end1 = 'Not vivid, dull, hazy';
-    Q5_end2 = 'Vivid, sharp, clear';
-    
-    % Draw all the text in one go
-    Screen('TextSize', window, InstrFont);
-    DrawFormattedText(window, Q5_q,'center', screenYpixels * 0.3, magenta);
-    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
-    Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window, Q5_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
-    DrawFormattedText(window, Q5_end2,screenXpixels * 0.63, screenYpixels * 0.69, grey);
-    Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
-    Screen('TextSize', window, InstrFont);
-    TaskInfo.Q5_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
-    % Flip to the screen
-    Screen('Flip', window);
-    % Wait for a key press
-    CheckTerminateTask;
+    TaskInfo.Q5_ans = displayVAS(window, windowRect, screenYpixels, ' How vivid is your experience \non a scale of \n0 = Not vivid, dull, hazy to 10 = Vivid, sharp, clear?', 'Not vivid, \ndull, hazy', 'Vivid, \nsharp, clear')
 
+    
     % Q6
-    Q6_q = 'How is your mental state \non a scale of \n1 = Sluggish/drowsy to 10 = Agitated/racing/restless?';
-    Q6_end1 = 'Sluggish/drowsy';
-    Q6_end2 = 'Agitated/racing/restless';
-    
-    % Draw all the text in one go
-    Screen('TextSize', window, InstrFont);
-    DrawFormattedText(window, Q6_q,'center', screenYpixels * 0.3, magenta);
-    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
-    Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window, Q6_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
-    DrawFormattedText(window, Q6_end2,screenXpixels * 0.57, screenYpixels * 0.69, grey);
-    Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
-    Screen('TextSize', window, InstrFont);
-    TaskInfo.Q6_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
-    % Flip to the screen
-    Screen('Flip', window);
-    % Wait for a key press
-    CheckTerminateTask;
+    TaskInfo.Q6_ans = displayVAS(window, windowRect, screenYpixels, 'How is your mental state \non a scale of \n0 = Sluggish/drowsy to 10 = Agitated/racing/restless?', 'Sluggish/\ndrowsy', 'Agitated/racing/restless')
 
+   
     % Q7
-    Q7_q = 'How is your mental effort \non a scale of \n1 = Effortless to 10 = Forced?';
-    Q7_end1 = 'Effortless';
-    Q7_end2 = 'Forced';
-    
-    % Draw all the text in one go
-    Screen('TextSize', window, InstrFont);
-    DrawFormattedText(window, Q7_q,'center', screenYpixels * 0.3, magenta);
-    DrawFormattedText(window, Q_num,'center', screenYpixels * 0.6, magenta);
-    Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window, Q7_end1,screenXpixels * 0.13, screenYpixels * 0.69, grey);
-    DrawFormattedText(window, Q7_end2,screenXpixels * 0.78, screenYpixels * 0.69, grey);
-    Screen('TextSize',window, InstrFontSmall);
-    DrawFormattedText(window,'Press RETURN to confirm','center', screenYpixels * 0.9,grey); 
-    Screen('TextSize', window, InstrFont);
-    TaskInfo.Q7_ans = GetEchoNumber(window, 'RESPONSE: ', screenXpixels * 0.4, screenYpixels * 0.79, magenta);
-    % Flip to the screen
-    Screen('Flip', window);
-    % Wait for a key press
-    CheckTerminateTask;
+    TaskInfo.Q7_ans = displayVAS(window, windowRect, screenYpixels, 'How is your mental effort \non a scale of \n0 = Effortless to 10 = Forced?', 'Effortless', 'Forced')
 
     Screen('TextSize', window, InstrFont);
     DrawFormattedText(window, ['Recorded responses:\n\n', sprintf('\n%d',TaskInfo.Q0_ans), sprintf('\n%d',TaskInfo.Q1_ans), sprintf('\n%d',TaskInfo.Q2_ans), ...
@@ -659,6 +691,105 @@ function CheckTerminateTask
             end
 end
 
+    function rating=displayVAS(window, windowRect, screenYpixels, question, label1, label2)
+       
+    % displayVAS  Displays a visual analog scale (VAS) and returns the user's rating.
+    %
+    %   rating = displayVAS(window, windowRect, screenYpixels, question, label1, label2)
+    %
+    %   Inputs:
+    %       window          - The Psychtoolbox window pointer.
+    %       windowRect      - The screen dimensions [x1, y1, x2, y2].
+    %       screenYpixels   - The vertical resolution of the screen.
+    %       question        - The question string to display.
+    %       label1          - The label for the left end of the scale.
+    %       label2          - The label for the right end of the scale.
+    %
+    %   Output:
+    %       rating          - The user's rating on the VAS.
+
+    % Scale parameters
+    scaleMin = 0;
+    scaleMax = 10;
+    scaleStep = 1;
+    scaleDuration = 15; 
+    markerColor = [255, 0, 0]; 
+    markerWidth = 20;
+    scaleColor = [255, 255, 255]; 
+    textColor = [255, 0, 255]; 
+    textSize = round(windowRect(4) * 0.03); 
+    smallTextSize = textSize; 
+    
+    scaleLength = windowRect(3) * 0.5; 
+    scaleHeight = windowRect(4) * 0.03; 
+    scaleX = (windowRect(3) - scaleLength) / 2; 
+    scaleY = windowRect(4) * 0.6; 
+    
+    labelOffsetX = windowRect(3) * 0.1; 
+    labelOffsetY = -12; 
+    label1X = scaleX - labelOffsetX - 2;
+    label1Y = scaleY - labelOffsetY;
+    label2X = scaleX + scaleLength + 4;
+    label2Y = scaleY - labelOffsetY;
+    
+    % Initial rating position
+    rating = (scaleMin + scaleMax) / 2; 
+    ratingPosition = scaleX + ((rating - scaleMin) / (scaleMax - scaleMin)) * scaleLength;
+    
+    % --- Display the question ---
+    Screen('TextSize', window, textSize); 
+    DrawFormattedText(window, question, 'center', screenYpixels * 0.3, textColor);
+    
+    % --- Draw the scale ---
+    Screen('FillRect', window, scaleColor, [scaleX, scaleY, scaleX + scaleLength, scaleY + scaleHeight]);
+    
+    % Draw the numbers
+    for i = 0:10
+        DrawFormattedText(window, num2str(i), scaleX + (i / 10) * scaleLength - 10, scaleY + scaleHeight + windowRect(4) * 0.06, textColor);
+    end
+    
+    % Draw the labels
+    Screen('TextSize', window, smallTextSize); 
+    DrawFormattedText(window, label1, label1X, label1Y, textColor);
+    DrawFormattedText(window, label2, label2X, label2Y, textColor);
+    
+    % ---  Response loop ---
+    startTime = GetSecs();
+    
+    while GetSecs() - startTime< scaleDuration
+        % Check for key presses
+         [keyIsDown, ~, keyCode] = KbCheck;
+        if keyIsDown
+            if keyCode(KbName('c')) 
+                rating = max(rating - scaleStep, scaleMin);
+            elseif keyCode(KbName('d')) 
+                rating = min(rating + scaleStep, scaleMax);
+            end
+    
+            % Update rating position
+            ratingPosition = scaleX + ((rating - scaleMin) / (scaleMax - scaleMin)) * scaleLength;
+    
+            % Redraw the scale and marker
+            Screen('FillRect', window, scaleColor, [scaleX, scaleY, scaleX + scaleLength, scaleY + scaleHeight]);
+            Screen('FillRect', window, markerColor, [ratingPosition - markerWidth/2, scaleY - scaleHeight/2, ratingPosition + markerWidth/2, scaleY + scaleHeight * 1.5]);
+            
+            % Redraw the numbers and labels (for clarity)
+            for i = 0:10
+                DrawFormattedText(window, num2str(i), scaleX + (i / 10) * scaleLength - 10, scaleY + scaleHeight + windowRect(4) * 0.06, textColor);
+            end
+            Screen('TextSize', window, smallTextSize); 
+            DrawFormattedText(window, question, 'center', screenYpixels * 0.3, textColor);
+            DrawFormattedText(window, label1, label1X, label1Y, textColor);
+            DrawFormattedText(window, label2, label2X, label2Y, textColor);
+            
+            % Flip the screen
+            Screen('Flip', window); 
+           
+            WaitSecs(0.1); 
+        end 
+        
+    end
+end 
     
 
 end
