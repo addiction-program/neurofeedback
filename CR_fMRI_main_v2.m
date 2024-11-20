@@ -125,7 +125,7 @@ black = BlackIndex(numscreen);
 grey = GrayIndex(numscreen);
 red = [white 0 0];
 blue = [0 0 white];
-magenta = [255 0 255];
+magenta = [0 255 255];
 
 % Open an on screen window and color it grey
 [window, windowRect] = PsychImaging('OpenWindow', numscreen, black, []);
@@ -481,39 +481,38 @@ else
 %     CheckTerminateTask;
 
 % Q0
-    TaskInfo.Q0_ans = displayVAS(window, windowRect, screenYpixels, 'How much do you feel like smoking cannabis?', 'Not at all', 'Extremely')
+    TaskInfo.Q0_ans = displayVAS(window, windowRect, screenYpixels, 'How much do you feel like smoking cannabis on a scale of: \n(1=not at all; 10=Extremely)', 'Not at all', 'Extremely')
 
     % Q1
-    TaskInfo.Q1_ans = displayVAS(window, windowRect, screenYpixels, 'How strong is your urge to smoke cannabis right now \non a scale of \n0 = Not at all to 10 = Very severe urge?', 'Not at all', 'Very severe urge')
+    TaskInfo.Q1_ans = displayVAS(window, windowRect, screenYpixels, 'How distracted or focused are you on a scale of: \n(1=Very distracted; 10=Very focused)', 'Very distracted', 'Very focused')
 
     
     % Q2
-    TaskInfo.Q2_ans = displayVAS(window, windowRect, screenYpixels, 'What is your level of relaxation-tension \non a scale of \n0 = Absolutely no tension to 10 = Extremely tense?', 'Absolutely \nno tension', 'Extremely tense')
+    TaskInfo.Q2_ans = displayVAS(window, windowRect, screenYpixels, 'How anxious do you feel on a scale of: \n(1=no anxiety at all; 10=Highest level of anxiety you could possibly feel)', 'No anxiety', 'Highest level \nof anxiety')
 
     
-    % Q3
-    TaskInfo.Q3_ans = displayVAS(window, windowRect, screenYpixels, 'How distracted or focused are you \non a scale of \n0 = Very distracted to 10 = Very focused?', 'Very \ndistracted', 'Very focused')
-
-    
-
-    % Q4
-    TaskInfo.Q4_ans = displayVAS(window, windowRect, screenYpixels, 'How aware are you of whatever arises \nin your moment to moment awareness on a scale of \n0 = Not aware to 10 = Very aware?', 'Not aware', 'Very aware')
-
-   
-    % Q5
-    TaskInfo.Q5_ans = displayVAS(window, windowRect, screenYpixels, ' How vivid is your experience \non a scale of \n0 = Not vivid, dull, hazy to 10 = Vivid, sharp, clear?', 'Not vivid, \ndull, hazy', 'Vivid, \nsharp, clear')
-
-    
-    % Q6
-    TaskInfo.Q6_ans = displayVAS(window, windowRect, screenYpixels, 'How is your mental state \non a scale of \n0 = Sluggish/drowsy to 10 = Agitated/racing/restless?', 'Sluggish/\ndrowsy', 'Agitated/racing/restless')
-
-   
-    % Q7
-    TaskInfo.Q7_ans = displayVAS(window, windowRect, screenYpixels, 'How is your mental effort \non a scale of \n0 = Effortless to 10 = Forced?', 'Effortless', 'Forced')
+%     % Q3
+%     TaskInfo.Q3_ans = displayVAS(window, windowRect, screenYpixels, 'How distracted or focused are you \non a scale of \n0 = Very distracted to 10 = Very focused?', 'Very \ndistracted', 'Very focused')
+% 
+%     
+% 
+%     % Q4
+%     TaskInfo.Q4_ans = displayVAS(window, windowRect, screenYpixels, 'How aware are you of whatever arises \nin your moment to moment awareness on a scale of \n0 = Not aware to 10 = Very aware?', 'Not aware', 'Very aware')
+% 
+%    
+%     % Q5
+%     TaskInfo.Q5_ans = displayVAS(window, windowRect, screenYpixels, ' How vivid is your experience \non a scale of \n0 = Not vivid, dull, hazy to 10 = Vivid, sharp, clear?', 'Not vivid, \ndull, hazy', 'Vivid, \nsharp, clear')
+% 
+%     
+%     % Q6
+%     TaskInfo.Q6_ans = displayVAS(window, windowRect, screenYpixels, 'How is your mental state \non a scale of \n0 = Sluggish/drowsy to 10 = Agitated/racing/restless?', 'Sluggish/\ndrowsy', 'Agitated/racing/restless')
+% 
+%    
+%     % Q7
+%     TaskInfo.Q7_ans = displayVAS(window, windowRect, screenYpixels, 'How is your mental effort \non a scale of \n0 = Effortless to 10 = Forced?', 'Effortless', 'Forced')
 
     Screen('TextSize', window, InstrFont);
-    DrawFormattedText(window, ['Recorded responses:\n\n', sprintf('\n%d',TaskInfo.Q0_ans), sprintf('\n%d',TaskInfo.Q1_ans), sprintf('\n%d',TaskInfo.Q2_ans), ...
-        sprintf('\n%d',TaskInfo.Q3_ans), sprintf('\n%d',TaskInfo.Q4_ans), sprintf('\n%d',TaskInfo.Q5_ans), sprintf('\n%d',TaskInfo.Q6_ans), sprintf('\n%d',TaskInfo.Q7_ans)],'center', 'center', magenta);
+    DrawFormattedText(window, ['Recorded responses:\n\n', sprintf('\n%d',TaskInfo.Q0_ans), sprintf('\n%d',TaskInfo.Q1_ans), sprintf('\n%d',TaskInfo.Q2_ans)],'center', 'center', magenta);
     Screen('TextSize',window, InstrFontSmall);
     DrawFormattedText(window, 'Press RETURN to confirm or any other key \nto re-do this section','center', screenYpixels * 0.9, grey);
     Screen('Flip',window);
@@ -709,17 +708,18 @@ end
     %       rating          - The user's rating on the VAS.
 
     % Scale parameters
-    scaleMin = 0;
+    scaleMin = 1;
     scaleMax = 10;
     scaleStep = 1;
     scaleDuration = 15; 
     markerColor = [255, 0, 0]; 
     markerWidth = 20;
     scaleColor = [255, 255, 255]; 
-    textColor = [255, 0, 255]; 
+    textColor = [255, 255, 255];
+    Cylian = [0 255 255]
     textSize = round(windowRect(4) * 0.03); 
     smallTextSize = textSize; 
-    
+    largerTextSize = round(windowRect(4) * 0.05)
     scaleLength = windowRect(3) * 0.5; 
     scaleHeight = windowRect(4) * 0.03; 
     scaleX = (windowRect(3) - scaleLength) / 2; 
@@ -733,23 +733,25 @@ end
     label2Y = scaleY - labelOffsetY;
     
     % Initial rating position
-    rating = (scaleMin + scaleMax) / 2; 
+    rating = 5; 
     ratingPosition = scaleX + ((rating - scaleMin) / (scaleMax - scaleMin)) * scaleLength;
-    
+    ratingPosition = round((ratingPosition - scaleX) / (scaleLength / (scaleMax - scaleMin))) * (scaleLength / (scaleMax - scaleMin)) + scaleX;
+
     % --- Display the question ---
-    Screen('TextSize', window, textSize); 
-    DrawFormattedText(window, question, 'center', screenYpixels * 0.3, textColor);
+    Screen('TextSize', window, largerTextSize); 
+    DrawFormattedText(window, question, 'center', screenYpixels * 0.3, Cylian);
     
+    Screen('TextSize', window, smallTextSize); 
     % --- Draw the scale ---
     Screen('FillRect', window, scaleColor, [scaleX, scaleY, scaleX + scaleLength, scaleY + scaleHeight]);
     
     % Draw the numbers
-    for i = 0:10
-        DrawFormattedText(window, num2str(i), scaleX + (i / 10) * scaleLength - 10, scaleY + scaleHeight + windowRect(4) * 0.06, textColor);
+    for i = 1:10
+        DrawFormattedText(window, num2str(i), scaleX + ((i-1) / (scaleMax-scaleMin)) * scaleLength - 10, scaleY + scaleHeight + windowRect(4) * 0.06, textColor);
     end
     
     % Draw the labels
-    Screen('TextSize', window, smallTextSize); 
+    
     DrawFormattedText(window, label1, label1X, label1Y, textColor);
     DrawFormattedText(window, label2, label2X, label2Y, textColor);
     
@@ -767,18 +769,21 @@ end
             end
     
             % Update rating position
-            ratingPosition = scaleX + ((rating - scaleMin) / (scaleMax - scaleMin)) * scaleLength;
-    
+            % Update rating position (corrected calculation)
+                ratingPosition = scaleX + ((rating - scaleMin) / (scaleMax - scaleMin)) * scaleLength;
+                ratingPosition = round((ratingPosition - scaleX) / (scaleLength / (scaleMax - scaleMin))) * (scaleLength / (scaleMax - scaleMin)) + scaleX;
+
             % Redraw the scale and marker
             Screen('FillRect', window, scaleColor, [scaleX, scaleY, scaleX + scaleLength, scaleY + scaleHeight]);
             Screen('FillRect', window, markerColor, [ratingPosition - markerWidth/2, scaleY - scaleHeight/2, ratingPosition + markerWidth/2, scaleY + scaleHeight * 1.5]);
             
             % Redraw the numbers and labels (for clarity)
-            for i = 0:10
-                DrawFormattedText(window, num2str(i), scaleX + (i / 10) * scaleLength - 10, scaleY + scaleHeight + windowRect(4) * 0.06, textColor);
+            for i = 1:10
+                DrawFormattedText(window, num2str(i), scaleX + ((i-1) / (scaleMax-scaleMin)) * scaleLength - 10, scaleY + scaleHeight + windowRect(4) * 0.06, textColor);
             end
+            Screen('TextSize', window, largerTextSize); 
+            DrawFormattedText(window, question, 'center', screenYpixels * 0.3, Cylian);
             Screen('TextSize', window, smallTextSize); 
-            DrawFormattedText(window, question, 'center', screenYpixels * 0.3, textColor);
             DrawFormattedText(window, label1, label1X, label1Y, textColor);
             DrawFormattedText(window, label2, label2X, label2Y, textColor);
             
