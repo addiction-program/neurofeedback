@@ -123,7 +123,7 @@ try
     green = [0 255 0];
     
     % Open the Psychtoolbox window
-    TEST=1; 
+    TEST=0; 
     if TEST==1
         [window, scr_rect] = PsychImaging('OpenWindow', ChosenScreen, black, [0 0 800 600]);
     else
@@ -272,7 +272,7 @@ try
       % N=Neutral Pic
       % D=down regulation
       % PR=practice 
-      blockOrder = { 'N','D', 'N', 'D', 'U'};
+      blockOrder = { 'U', 'N', 'V'};
 %            blockOrder = { 'F', 'N', 'F', 'V', 'F', 'U', 'N', 'F', 'V', 'F', 'D', 'N', 'F', 'V'};
 %       blockOrder = { 'R', 'V', 'F', 'U', 'F', 'N', 'F', 'V', 'F', 'D', 'F', 'N', 'F', 'V'};
 %     full run  %write number of volumes, runs, total time 
@@ -1685,7 +1685,7 @@ function [block_start, block_end, block_dur, block_start_TR, block_end_TR, block
         
     
 
-        while GetSecs() - startTime < scaleDuration
+        while true
             % Check for key presses (same as before)
             [keyIsDown, ~, keyCode] = KbCheck;
             if keyIsDown
@@ -1693,6 +1693,8 @@ function [block_start, block_end, block_dur, block_start_TR, block_end_TR, block
                     rating = max(rating - scaleStep, scaleMin);
                 elseif keyCode(1, KbName('d'))
                     rating = min(rating + scaleStep, scaleMax);
+                elseif keyCode(KbName('Return')) 
+                    break;
                 end
 
                 % Update rating position (corrected calculation)
