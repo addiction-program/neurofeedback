@@ -481,14 +481,14 @@ else
 %     CheckTerminateTask;
 
 % Q0
-    TaskInfo.Q0_ans = displayVAS(window, windowRect, screenYpixels, 'How much do you feel like smoking cannabis on a scale of: \n(1=not at all; 10=Extremely)', 'Not at all', 'Extremely')
+    TaskInfo.Q0_ans = displayVAS(window, windowRect, screenYpixels, 'How much do you feel like smoking cannabis right now?', 'Not at all', 'Extremely')
 
     % Q1
-    TaskInfo.Q1_ans = displayVAS(window, windowRect, screenYpixels, 'How distracted or focused are you on a scale of: \n(1=Very distracted; 10=Very focused)', 'Very distracted', 'Very focused')
+    TaskInfo.Q1_ans = displayVAS(window, windowRect, screenYpixels, 'How focused are you right now?', 'Not at all', 'Extremely')
 
     
     % Q2
-    TaskInfo.Q2_ans = displayVAS(window, windowRect, screenYpixels, 'How anxious do you feel on a scale of: \n(1=no anxiety at all; 10=Highest level of anxiety you could possibly feel)', 'No anxiety', 'Highest level \nof anxiety')
+    TaskInfo.Q2_ans = displayVAS(window, windowRect, screenYpixels, 'How anxious do you feel right now?', 'Not at all', 'Extremely')
 
     
 %     % Q3
@@ -689,7 +689,7 @@ function CheckTerminateTask
                 sca;
             end
 end
-
+%%%%%%%%%%%%%%%%%%
     function rating=displayVAS(window, windowRect, screenYpixels, question, label1, label2)
        
     % displayVAS  Displays a visual analog scale (VAS) and returns the user's rating.
@@ -717,7 +717,7 @@ end
     scaleColor = [255, 255, 255]; 
     textColor = [255, 255, 255];
     Cylian = [0 255 255]
-    textSize = round(windowRect(4) * 0.03); 
+    textSize = round(windowRect(4) * 0.04); 
     smallTextSize = textSize; 
     largerTextSize = round(windowRect(4) * 0.05)
     scaleLength = windowRect(3) * 0.5; 
@@ -729,7 +729,7 @@ end
     labelOffsetY = -12; 
     label1X = scaleX - labelOffsetX - 2;
     label1Y = scaleY - labelOffsetY;
-    label2X = scaleX + scaleLength + 4;
+    label2X = scaleX + scaleLength + 24;
     label2Y = scaleY - labelOffsetY;
     
     % Initial rating position
@@ -758,7 +758,7 @@ end
     % ---  Response loop ---
     startTime = GetSecs();
     
-    while GetSecs() - startTime< scaleDuration
+    while true
         % Check for key presses
          [keyIsDown, ~, keyCode] = KbCheck;
         if keyIsDown
@@ -786,13 +786,18 @@ end
             Screen('TextSize', window, smallTextSize); 
             DrawFormattedText(window, label1, label1X, label1Y, textColor);
             DrawFormattedText(window, label2, label2X, label2Y, textColor);
-            
+
             % Flip the screen
-            Screen('Flip', window); 
-           
-            WaitSecs(0.1); 
-        end 
-        
+            
+            Screen('Flip', window);  
+            WaitSecs(0.1);
+        end
+        % Separate check for 'Return' ONLY for confirmation
+            [~, ~, keyCode] = KbCheck; % Check again for key releases
+            if keyCode(KbName('Return'))
+                WaitSecs(0.1);
+                break; 
+            end
     end
 end 
     
