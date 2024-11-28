@@ -144,6 +144,7 @@ try
         'How anxious do you feel right now?'
     };
 %  % VAS scale BEFORE trigger 
+%%%comment out for down regulation%%%
  blockOrder = { 'V'};
  run_vas_block = 1;      % Add this line to define the variable
     % VAS scale BEFORE trigger 
@@ -272,12 +273,17 @@ try
       % N=Neutral Pic
       % D=down regulation
       % PR=practice 
-      blockOrder = {'F','U','N', 'V', 'D','N','V' };
-%            blockOrder = { 'F', 'N', 'F', 'V', 'F', 'U', 'N', 'F', 'V', 'F', 'D', 'N', 'F', 'V'};
-%       blockOrder = { 'R', 'V', 'F', 'U', 'F', 'N', 'F', 'V', 'F', 'D', 'F', 'N', 'F', 'V'};
-%     full run  %write number of volumes, runs, total time 
-%      blockOrder = { 'F', 'N', 'V', 'F', 'U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F', 'V', 'F', 'D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F', 'V'};
-    % Declare cravingImageNumbers before the loop
+      
+%%%upregulation run
+
+      blockOrder = { 'F', 'N', 'F', 'U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F', 'V'};
+     
+%%%downregulation run
+ 
+%      blockOrder = { 'F', 'N', 'D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F', 'V'};
+    
+
+% Declare cravingImageNumbers before the loop
     cravingImageNumbers = []; % Initialize as empty  
     
     
