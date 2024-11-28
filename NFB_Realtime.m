@@ -145,29 +145,29 @@ try
     };
 %  % VAS scale BEFORE trigger 
 %%%comment out for down regulation%%%
- blockOrder = { 'V'};
- run_vas_block = 1;      % Add this line to define the variable
-    % VAS scale BEFORE trigger 
-    if run_vas_block 
-       
-%         Text = 'RATE CRAVINGS';  % The instruction text
-%         
-%         Screen('TextSize', window, round(windowHeight * 0.07));
-%         Screen('TextFont', window, 'Arial');                    
-%         Screen('TextStyle', window, 0);  
-%         DrawFormattedText(window,Text,'center','center',Cyan);
-%         Screen('Flip',window);
-%         WaitSecs(5); % Display the instruction for 5 seconds
-
-
-        % Call VAS_scale with vas_start_time
-        [~, ~, ~, ~, ~, ~, ~, ratings] = VAS_scale(window, scr_rect, vasQuestions, feedback_dir, feedback_file_name, fileID7, 1, num_blocks, 1, blockOrder);  
-
-        % Write the ratings to the file (fileID7)
-%         for i = 1:length(ratings)
-            fprintf(fileID7, '%d        %.2f        %d\n', 1, 0, ratings);  % Using 0 for block_end as it's before the trigger
-%         end
-    end
+%  blockOrder = { 'V'};
+%  run_vas_block = 1;      % Add this line to define the variable
+%     % VAS scale BEFORE trigger 
+%     if run_vas_block 
+%        
+% %         Text = 'RATE CRAVINGS';  % The instruction text
+% %         
+% %         Screen('TextSize', window, round(windowHeight * 0.07));
+% %         Screen('TextFont', window, 'Arial');                    
+% %         Screen('TextStyle', window, 0);  
+% %         DrawFormattedText(window,Text,'center','center',Cyan);
+% %         Screen('Flip',window);
+% %         WaitSecs(5); % Display the instruction for 5 seconds
+% 
+% 
+%         % Call VAS_scale with vas_start_time
+%         [~, ~, ~, ~, ~, ~, ~, ratings] = VAS_scale(window, scr_rect, vasQuestions, feedback_dir, feedback_file_name, fileID7, 1, num_blocks, 1, blockOrder);  
+% 
+%         % Write the ratings to the file (fileID7)
+% %         for i = 1:length(ratings)
+%             fprintf(fileID7, '%d        %.2f        %d\n', 1, 0, ratings);  % Using 0 for block_end as it's before the trigger
+% %         end
+%     end
 
 
     % Get the coordinates of screen centre
@@ -276,11 +276,11 @@ try
       
 %%%upregulation run
 
-      blockOrder = { 'F', 'N', 'F', 'U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F', 'V'};
+      %blockOrder = { 'F', 'N', 'F', 'U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F', 'V'};
      
 %%%downregulation run
  
-%      blockOrder = { 'F', 'N', 'D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F', 'V'};
+      blockOrder = { 'F', 'N', 'D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F', 'V'};
     
 
 % Declare cravingImageNumbers before the loop
