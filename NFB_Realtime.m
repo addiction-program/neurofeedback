@@ -139,9 +139,9 @@ try
 %         'How anxious do you feel on a scale of: \n(1=No anxiety at all; 10=Highest level of anxiety you could possibly feel)'
 %     };
     vasQuestions = { ...
-        'How much do you feel like smoking cannabis?', ...
-        'How distracted or focused are you?', ...
-        'How anxious do you feel?'
+        'How much do you feel like smoking cannabis right now?', ...
+        'How focused are you right now?', ...
+        'How anxious do you feel right now?'
     };
 %  % VAS scale BEFORE trigger 
  blockOrder = { 'V'};
@@ -149,14 +149,14 @@ try
     % VAS scale BEFORE trigger 
     if run_vas_block 
        
-        Text = 'RATE CRAVINGS';  % The instruction text
-        
-        Screen('TextSize', window, round(windowHeight * 0.07));
-        Screen('TextFont', window, 'Arial');                    
-        Screen('TextStyle', window, 0);  
-        DrawFormattedText(window,Text,'center','center',Cyan);
-        Screen('Flip',window);
-        WaitSecs(5); % Display the instruction for 5 seconds
+%         Text = 'RATE CRAVINGS';  % The instruction text
+%         
+%         Screen('TextSize', window, round(windowHeight * 0.07));
+%         Screen('TextFont', window, 'Arial');                    
+%         Screen('TextStyle', window, 0);  
+%         DrawFormattedText(window,Text,'center','center',Cyan);
+%         Screen('Flip',window);
+%         WaitSecs(5); % Display the instruction for 5 seconds
 
 
         % Call VAS_scale with vas_start_time
@@ -200,8 +200,8 @@ try
     %Screen before trigger
     % FIRST CUE
 %     Text = 'A cross will appear now... \n \n Please look at the cross\n\n Press `t` to start.';
-    Text = 'Pictures of cannabis >> change the thermometer \n \n Pictures of anything else >> simply watch';
-    Screen('TextSize', window, round(windowHeight * 0.07));
+    Text = 'When you see pictures of cannabis, change the thermometer \n \n When you see pictures of anything else, simply watch';
+    Screen('TextSize', window, round(windowHeight * 0.05));
     Screen('TextFont', window, 'Arial');                    
     Screen('TextStyle', window, 0);  
     DrawFormattedText(window,Text,'center','center',Cyan);
@@ -272,7 +272,7 @@ try
       % N=Neutral Pic
       % D=down regulation
       % PR=practice 
-      blockOrder = { 'U', 'N', 'V'};
+      blockOrder = {'F','U','N', 'V', 'D','N','V' };
 %            blockOrder = { 'F', 'N', 'F', 'V', 'F', 'U', 'N', 'F', 'V', 'F', 'D', 'N', 'F', 'V'};
 %       blockOrder = { 'R', 'V', 'F', 'U', 'F', 'N', 'F', 'V', 'F', 'D', 'F', 'N', 'F', 'V'};
 %     full run  %write number of volumes, runs, total time 
@@ -562,10 +562,10 @@ try
                 case 'V'
                     if run_vas_block
                         
-                        Text = sprintf(['RATE CRAVINGS']);
-                        [cue_start, cue_end, cue_dur, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = WriteInstruction(Text, Cyan, cue_dur_TR, feedback_dir, feedback_file_name);
-                            cue_timings = [cue_timings; cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1];
-                            fprintf(fileID1, '%f  %f  %f  %f  %f  %f\n\n', [cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1]);
+%                         Text = sprintf(['RATE CRAVINGS']);
+%                         [cue_start, cue_end, cue_dur, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = WriteInstruction(Text, Cyan, cue_dur_TR, feedback_dir, feedback_file_name);
+%                             cue_timings = [cue_timings; cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1];
+%                             fprintf(fileID1, '%f  %f  %f  %f  %f  %f\n\n', [cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1]);
                             
 %                         if p == find(strcmp(blockOrder, 'V'), 1) && block_num == 1
 %                             % VAS 
@@ -1625,14 +1625,14 @@ function [block_start, block_end, block_dur, block_start_TR, block_end_TR, block
     labelOffsetY = -12; 
     label1X = scaleX - labelOffsetX - 2;
     label1Y = scaleY - labelOffsetY;
-    label2X = scaleX + scaleLength + 4;
+    label2X = scaleX + scaleLength + 24;
     label2Y = scaleY - labelOffsetY;
 
     % Define the labels for each question
     vasLabels = {
         {'Not at all', 'Extremely'}, 
-        {'Very \ndistracted', 'Very focused'}, 
-        {'No anxiety \nat all', 'Highest level \nof anxiety'}
+        {'Not at all', 'Extremely'}, 
+        {'Not at all', 'Extremely'}
     }; 
     % Initialize ratings array
     ratings = zeros(1, 3); 
@@ -1669,7 +1669,7 @@ function [block_start, block_end, block_dur, block_start_TR, block_end_TR, block
         % Draw the rating marker
         Screen('FillRect', window, markerColor, [ratingPosition - markerWidth/2, scaleY - scaleHeight/2, ratingPosition + markerWidth/2, scaleY + scaleHeight * 1.5]);
         % Draw the numbers and labels again
-        Screen('TextSize', window, round(scr_rect(4) * 0.03));
+        Screen('TextSize', window, round(scr_rect(4) * 0.035));
         for i = 1:10
             DrawFormattedText(window, num2str(i), scaleX + ((i-1) / (scaleMax-scaleMin)) * scaleLength - 10, scaleY + scaleHeight + scr_rect(4) * 0.06, textColor);
         end
@@ -1709,7 +1709,7 @@ function [block_start, block_end, block_dur, block_start_TR, block_end_TR, block
                 Screen('FillRect', window, markerColor, [ratingPosition - markerWidth/2, scaleY - scaleHeight/2, ratingPosition + markerWidth/2, scaleY + scaleHeight * 1.5]);
 
                 % Draw the numbers and labels again
-                Screen('TextSize', window, round(scr_rect(4) * 0.03));
+                Screen('TextSize', window, round(scr_rect(4) * 0.035));
                 for i = 1:10
                     DrawFormattedText(window, num2str(i), scaleX + ((i-1) / (scaleMax-scaleMin)) * scaleLength - 10, scaleY + scaleHeight + scr_rect(4) * 0.06, textColor);
                 end
