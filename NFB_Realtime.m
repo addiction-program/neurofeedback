@@ -143,31 +143,31 @@ try
         'How focused are you right now?', ...
         'How anxious do you feel right now?'
     };
-%  % VAS scale BEFORE trigger 
-%%%comment out for down regulation%%%
-%  blockOrder = { 'V'};
-%  run_vas_block = 1;      % Add this line to define the variable
-%     % VAS scale BEFORE trigger 
-%     if run_vas_block 
-%        
-% %         Text = 'RATE CRAVINGS';  % The instruction text
-% %         
-% %         Screen('TextSize', window, round(windowHeight * 0.07));
-% %         Screen('TextFont', window, 'Arial');                    
-% %         Screen('TextStyle', window, 0);  
-% %         DrawFormattedText(window,Text,'center','center',Cyan);
-% %         Screen('Flip',window);
-% %         WaitSecs(5); % Display the instruction for 5 seconds
-% 
-% 
-%         % Call VAS_scale with vas_start_time
-%         [~, ~, ~, ~, ~, ~, ~, ratings] = VAS_scale(window, scr_rect, vasQuestions, feedback_dir, feedback_file_name, fileID7, 1, num_blocks, 1, blockOrder);  
-% 
-%         % Write the ratings to the file (fileID7)
-% %         for i = 1:length(ratings)
-%             fprintf(fileID7, '%d        %.2f        %d\n', 1, 0, ratings);  % Using 0 for block_end as it's before the trigger
-% %         end
-%     end
+ % VAS scale BEFORE trigger 
+%%comment out for down regulation%%%
+ blockOrder = { 'V'};
+ run_vas_block = 1;      % Add this line to define the variable
+    % VAS scale BEFORE trigger 
+    if run_vas_block 
+       
+%         Text = 'RATE CRAVINGS';  % The instruction text
+%         
+%         Screen('TextSize', window, round(windowHeight * 0.07));
+%         Screen('TextFont', window, 'Arial');                    
+%         Screen('TextStyle', window, 0);  
+%         DrawFormattedText(window,Text,'center','center',Cyan);
+%         Screen('Flip',window);
+%         WaitSecs(5); % Display the instruction for 5 seconds
+
+
+        % Call VAS_scale with vas_start_time
+        [~, ~, ~, ~, ~, ~, ~, ratings] = VAS_scale(window, scr_rect, vasQuestions, feedback_dir, feedback_file_name, fileID7, 1, num_blocks, 1, blockOrder);  
+
+        % Write the ratings to the file (fileID7)
+%         for i = 1:length(ratings)
+            fprintf(fileID7, '%d        %.2f        %d\n', 1, 0, ratings);  % Using 0 for block_end as it's before the trigger
+%         end
+    end
 
 
     % Get the coordinates of screen centre
@@ -276,12 +276,12 @@ try
       
 %%%upregulation run
 
-      %blockOrder = { 'F', 'N', 'F', 'U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F', 'V'};
+      blockOrder = { 'F', 'N', 'F', 'U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F', 'V'};
      
 %%%downregulation run
  
-      blockOrder = { 'F', 'N', 'D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F', 'V'};
-    
+      %blockOrder = { 'F', 'N', 'D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F', 'V'};
+   
 
 % Declare cravingImageNumbers before the loop
     cravingImageNumbers = []; % Initialize as empty  
@@ -1173,7 +1173,7 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
             dstRect = CenterRect([0, 0, newImageWidth, newImageHeight], [0, 0, windowWidth, windowHeight]);
 
             % Draw the image texture
-            Screen('DrawTexture', window, imageTextures(imageIndex), [], dstRect);
+            Screen('DrawTexture', window, imageTextures(imageIndex), [], dstRect, [], [], 0.7);
             
             % Calculate the x-coordinate for the center of the image
 %             offsetX = windowWidth * 0.1;  % Adjust this value to move the image left or right
@@ -1379,10 +1379,10 @@ function rect_num = DrawFeedbackDownregulation(score)
     % Fill rectangles 21-40 with black
 %     Screen('FillRect', window, rect_color_black', all_rect_coords(:, 21:40));
     
-    % Fill the first 20 rectangles (1-20) with Cyan initially
-    Screen('FillRect', window, rect_color_white', all_rect_coords(:, 1:20));
+    % Fill the first 20 rectangles (1-20) with white initially
+     Screen('FillRect', window, rect_color_white', all_rect_coords(:, 1:20));
     
-    % Fill the first 'score' number of rectangles (1-20) with black based on the score
+    %Fill the first 'score' number of rectangles (1-20) with black based on the score
     if score > 0 && score <= 20
         Screen('FillRect', window, repmat(rect_color_black', [1, score]), all_rect_coords(:, (20 - score+1):20));
     end
