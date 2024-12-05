@@ -573,8 +573,9 @@ for i = 1:size(imge_indexes,1)
     this_seq_trial=all_seq(ntrial);
     this_image=imge_indexes(this_seq_trial,1);
     % Determine the scaling needed to make the image fill the whole
+    scalingFactor = 0.7;  % For 80% of the original size
     % screen in the y dimension
-    maxScaling = screenYpixels/imge_sizes(this_seq_trial,1);
+    maxScaling = (screenYpixels / imge_sizes(this_seq_trial,1)) * scalingFactor;
     % Set the based rectangle size for drawing to the screen
     dstRects = CenterRectOnPointd([0 0 imge_sizes(this_seq_trial,2) imge_sizes(this_seq_trial,1)] .*maxScaling, xCenter, yCenter);
     % Draw the image to the screen, unless otherwise specified PTB will draw
