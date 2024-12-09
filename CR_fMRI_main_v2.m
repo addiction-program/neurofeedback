@@ -535,9 +535,9 @@ end
 %% TASK trials
 
 % Draw all the text in one go - Instructions
-Instrline1 = 'In this task you will see pictures on screen';
+Instrline1 = 'In this task you will see pictures on the screen';
 Instrline2 = '\n\nPlease try to keep your head still.';
-Instrline3 = '\n\nYour task is to look as these pictures closely \nand as attentively as you can.';
+Instrline3 = '\n\nYour task is to look at these pictures closely \nand as attentively as you can.';
 Instrline4 = '\n\nThe task will take about 10 minutes.';
 Instrline5 = '\n\nWe are about to start. Are you ready?';
 
