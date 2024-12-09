@@ -599,6 +599,58 @@ for i = 1:size(imge_indexes,1)
     CheckTerminateTask;
 end 
 
+
+%%%%postavs
+if answerdebug
+    Screen('TextSize',window, InstrFontSmall);
+    DrawFormattedText(window, 'Debug run. Skipping questions...', 'center', 'center', magenta);
+    Screen('Flip',window);
+    WaitSecs(2);
+else
+    redo = 0;
+    while redo < 1
+    % VAS questions
+    Screen('TextSize',window, InstrFont);
+    DrawFormattedText(window, 'Please respond to \nthe following questions', 'center', 'center', magenta);
+%     Screen('TextSize',window, InstrFontSmall);
+%     DrawFormattedText(window, 'Press any key to continue','center', screenYpixels * 0.7, grey);
+    Screen('Flip',window);
+    CheckTerminateTask;
+    % Wait for a key press
+    KbStrokeWait(-1);
+% Q0
+    TaskInfo.Q0_ans = displayVAS(window, windowRect, screenYpixels, 'How much do you feel like smoking cannabis right now?', 'Not at all', 'Extremely')
+
+    % Q1
+    TaskInfo.Q1_ans = displayVAS(window, windowRect, screenYpixels, 'How focused are you right now?', 'Not at all', 'Extremely')
+
+    
+    % Q2
+    TaskInfo.Q2_ans = displayVAS(window, windowRect, screenYpixels, 'How anxious do you feel right now?', 'Not at all', 'Extremely')
+
+    Screen('TextSize', window, InstrFont);
+    DrawFormattedText(window, ['Recorded responses:\n\n', sprintf('\n%d',TaskInfo.Q0_ans), sprintf('\n%d',TaskInfo.Q1_ans), sprintf('\n%d',TaskInfo.Q2_ans)],'center', 'center', magenta);
+    Screen('TextSize',window, InstrFontSmall);
+    DrawFormattedText(window, 'Press RETURN to confirm or any other key \nto re-do this section','center', screenYpixels * 0.9, grey);
+    Screen('Flip',window);
+    KbQueueFlush;
+    pressed = false;
+        while ~pressed
+            pause(0.005);
+            [pressed, pressed_keys] = KbQueueCheck;
+        end
+        if any(pressed_keys(RETURN_Key))
+            redo = 1;
+        else
+            redo = 0;
+        end
+    end
+
+end
+
+
+
+
 Screen('TextSize',window, InstrFont);
 DrawFormattedText(window, 'We are done. Thank you!', 'center', 'center', magenta);
 Screen('Flip',window);
