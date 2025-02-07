@@ -56,13 +56,13 @@ Fix_block_timings = [];
 
 
 % Open files to write cue and block timings
-fileID1 = fopen(fullfile([pwd '\Participant_' num2str(pp_no)],['\' date '_pp_' num2str(pp_no) '_run_' num2str(run_no) '_Text_timing.txt']), 'w');
-fileID2 = fopen(fullfile([pwd '\Participant_' num2str(pp_no)],['\' date '_pp_' num2str(pp_no) '_run_' num2str(run_no) '_block_timing.txt']), 'w');
-fileID3 = fopen(fullfile([pwd '\Participant_' num2str(pp_no)],['\' date '_pp_' num2str(pp_no) '_run_' num2str(run_no) 'Rest_block_timing.txt']), 'w');
-fileID4 = fopen(fullfile([pwd '\Participant_' num2str(pp_no)],['\' date '_pp_' num2str(pp_no) '_run_' num2str(run_no) 'Neutral_block_timing.txt']), 'w');
-fileID5 = fopen(fullfile([pwd '\Participant_' num2str(pp_no)],['\' date '_pp_' num2str(pp_no) '_run_' num2str(run_no) 'Upregulation_block_timing.txt']), 'w');
-fileID6 = fopen(fullfile([pwd '\Participant_' num2str(pp_no)],['\' date '_pp_' num2str(pp_no) '_run_' num2str(run_no) 'Downregulation_block_timing.txt']), 'w');
-fileID7 = fopen(fullfile([pwd '\Participant_' num2str(pp_no)],['\' date '_pp_' num2str(pp_no) '_run_' num2str(run_no) '_VAS_results.txt']), 'w');
+fileID1 = fopen(fullfile([pwd '\Participant_' num2str(pp_no) '_run' num2str(run_no)],['\' date '_pp_' num2str(pp_no) '_run_' num2str(run_no) '_Text_timing.txt']), 'w');
+fileID2 = fopen(fullfile([pwd '\Participant_' num2str(pp_no) '_run' num2str(run_no)],['\' date '_pp_' num2str(pp_no) '_run_' num2str(run_no) '_block_timing.txt']), 'w');
+fileID3 = fopen(fullfile([pwd '\Participant_' num2str(pp_no) '_run' num2str(run_no)],['\' date '_pp_' num2str(pp_no) '_run_' num2str(run_no) 'Rest_block_timing.txt']), 'w');
+fileID4 = fopen(fullfile([pwd '\Participant_' num2str(pp_no) '_run' num2str(run_no)],['\' date '_pp_' num2str(pp_no) '_run_' num2str(run_no) 'Neutral_block_timing.txt']), 'w');
+fileID5 = fopen(fullfile([pwd '\Participant_' num2str(pp_no) '_run' num2str(run_no)],['\' date '_pp_' num2str(pp_no) '_run_' num2str(run_no) 'Upregulation_block_timing.txt']), 'w');
+fileID6 = fopen(fullfile([pwd '\Participant_' num2str(pp_no) '_run' num2str(run_no)],['\' date '_pp_' num2str(pp_no) '_run_' num2str(run_no) 'Downregulation_block_timing.txt']), 'w');
+fileID7 = fopen(fullfile([pwd '\Participant_' num2str(pp_no) '_run' num2str(run_no)],['\' date '_pp_' num2str(pp_no) '_run_' num2str(run_no) '_VAS_results.txt']), 'w');
 
 % Store file IDs as variables
 fileID1_var = fileID1; 
@@ -98,7 +98,8 @@ fprintf(fileID7, '\n============================================================
 fprintf(fileID7, '\n\n______________________________VAS Results:__________________________');
 
 
-saveroot = [pwd '\Participant_' num2str(pp_no) '\'];
+saveroot = [pwd '\Participant_' num2str(pp_no) '_run' num2str(run_no) '\'];
+
 
 % Create the first dummy feedback file
 dlmwrite([feedback_dir '\' feedback_file_name '-1.rtp'],[2,0,0,-1],'delimiter',' ');
@@ -201,7 +202,7 @@ try
     %Screen before trigger
     % FIRST CUE
 %     Text = 'A cross will appear now... \n \n Please look at the cross\n\n Press `t` to start.';
-    Text = 'When you see pictures of cannabis, change the thermometer \n \n When you see pictures of anything else, simply watch';
+    Text = 'When you see pictures of cannabis, change the craving bar. \n \n When you see pictures of anything else, simply look.';
     Screen('TextSize', window, round(windowHeight * 0.05));
     Screen('TextFont', window, 'Arial');                    
     Screen('TextStyle', window, 0);  
@@ -410,7 +411,7 @@ try
 %                             
 %                         else
                             % CUE before craving task
-                            Text = 'INCREASE THERMOMETER  ';
+                                Text = 'GET READY TO \n INCREASE CRAVING BAR  ';
                             [cue_start, cue_end, ~, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = UpWriteInstruction(Text, Cyan, cue_dur_TR, feedback_dir, feedback_file_name);
                             cue_dur = cue_end - cue_start;
                             cue_timings = [cue_timings; cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1];
@@ -448,7 +449,7 @@ try
                 case 'N'
                     if run_neutral_block
                         % CUE before craving task
-                            Text = 'SIMPLY WATCH';
+                            Text = 'GET READY TO SIMPLY LOOK';
                             [cue_start, cue_end, ~, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = WriteInstruction(Text, Cyan, cue_dur_TR, feedback_dir, feedback_file_name);
                             cue_dur = cue_end - cue_start;
                             cue_timings = [cue_timings; cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1];
@@ -499,7 +500,7 @@ try
                 case 'D'
                     if run_downregulation_block
                         % CUE before craving task
-                            Text = 'DECREASE THERMOMETER';
+                            Text = 'GET READY TO \n DECREASE CRAVING BAR';
                             [cue_start, cue_end, ~, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = DownWriteInstruction(Text, Cyan, cue_dur_TR, feedback_dir, feedback_file_name);
                             cue_dur = cue_end - cue_start;
                             cue_timings = [cue_timings; cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1];
@@ -693,8 +694,8 @@ function [co, ce, cdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
    % Arrow parameters (adjusted to be next to the instruction)
     x_size = scr_rect(3) / 15;
     y_size = scr_rect(4) / 60;
-    arrowBaseX = centreX + x_size * 4.2;  % Adjusted to be closer to the text
-    arrowBaseY = centreY;  % Adjusted to be vertically aligned with the text
+    arrowBaseX = centreX + x_size * 4;  % Adjusted to be closer to the text
+    arrowBaseY = centreY + y_size * 2;  % Adjusted to be vertically aligned with the text
     arrowHeight = 3 * y_size; 
     arrowHeadSize = scr_rect(3) * 0.02; 
     arrowColor = [255 255 255]; 
@@ -759,8 +760,8 @@ function [co, ce, cdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
    % Arrow parameters (adjusted to be next to the instruction)
     x_size = scr_rect(3) / 15;
     y_size = scr_rect(4) / 60;
-    arrowBaseX = centreX + x_size * 4.4;  % Adjusted to be closer to the text
-    arrowBaseY = centreY - y_size * 1;  % Adjusted to be vertically aligned with the text
+    arrowBaseX = centreX + x_size * 4.2;  % Adjusted to be closer to the text
+    arrowBaseY = centreY*1.03;  % Adjusted to be vertically aligned with the text
     arrowHeight = 3 * y_size; 
     arrowHeadSize = scr_rect(3) * 0.02; 
     arrowColor = [255 255 255]; 
@@ -968,7 +969,7 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
                 
             [windowWidth, windowHeight] = Screen('WindowSize', window);
             newImageWidth = windowWidth * 0.6;  
-            newImageHeight = windowHeight * 0.8;
+            newImageHeight = windowHeight * 0.72;
             % Calculate the x-coordinate for the center of the image
             offsetX = windowWidth * 0.1;  % Adjust this value to move the image left or right
             centerX = windowWidth / 2 - offsetX; 
@@ -1070,7 +1071,7 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
 
             [windowWidth, windowHeight] = Screen('WindowSize', window);
             newImageWidth = windowWidth * 0.6;  
-            newImageHeight = windowHeight * 0.8;
+            newImageHeight = windowHeight * 0.72;
             % Calculate the x-coordinate for the center of the image
             offsetX = windowWidth * 0.1;  % Adjust this value to move the image left or right
             centerX = windowWidth / 2 - offsetX; 
@@ -1120,8 +1121,8 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
         % Select 1 random neutral images, ensuring no repetition within a block_num
         allNeutralImageIndices = 1:numNeutralImages;
         if isempty(selectedNeutralImageIndices)
-            selectedNeutralImageIndices = randperm(numNeutralImages, 1); %change for different Baseline cue/timing
-            imageDurationSecs = 60; %change for different Baseline cue/timing
+            selectedNeutralImageIndices = find(strcmp({neutralImageFiles.name}, 'N2001.png')); %change for different Baseline cue/timing
+            imageDurationSecs = 70; %change for different Baseline cue/timing
         else
             remainingNeutralImageIndices = setdiff(allNeutralImageIndices, selectedNeutralImageIndices);
             selectedNeutralImageIndices = remainingNeutralImageIndices(randperm(numel(remainingNeutralImageIndices), 2)); %change for different cue/timing
@@ -1168,12 +1169,12 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
             current_TBV_tr = rt_load_BOLD(folder_path, file_prefix);
             [windowWidth, windowHeight] = Screen('WindowSize', window);
             newImageWidth = windowWidth * 0.6;
-            newImageHeight = windowHeight * 0.8;
+            newImageHeight = windowHeight * 0.72;
 
             dstRect = CenterRect([0, 0, newImageWidth, newImageHeight], [0, 0, windowWidth, windowHeight]);
 
             % Draw the image texture
-            Screen('DrawTexture', window, imageTextures(imageIndex), [], dstRect, [], [], 0.7);
+            Screen('DrawTexture', window, imageTextures(imageIndex), [], dstRect);
             
             % Calculate the x-coordinate for the center of the image
 %             offsetX = windowWidth * 0.1;  % Adjust this value to move the image left or right
@@ -1195,14 +1196,14 @@ end
 function DrawNeutralFeedback()
     global window scr_rect centreX centreY windowHeight 
 
-    x_size = scr_rect(3) / 15;
-    y_size = scr_rect(4) / 60; 
+    x_size = scr_rect(3) / 13;
+    y_size = scr_rect(4) / 40; 
     rect_size = [0 0 x_size y_size];
     
     % No fill color needed since we don't want any filled rectangles
     
     % Adjust these values to control the bar's position
-    barOffsetX = x_size * 5;     
+    barOffsetX = x_size * 4;     
     barOffsetY = 0;    
     all_rect_coords = zeros(4, 20);  % Adjusted for 40 rectangles
     rect_start_pos = -10;  % Adjust for 40 rectangles
@@ -1231,8 +1232,8 @@ function DrawNeutralFeedback()
     Screen('TextFont', window, 'Arial');
     Screen('TextStyle', window, 0);
     
-    label_1 = '  High Craving';
-    label_2 = '  Low Craving';
+    label_1 = '  Higher Craving';
+    label_2 = '  Lower Craving';
     label_1_color = [255 255 255];
     label_2_color = [255 255 255];
     
@@ -1259,13 +1260,13 @@ end
 function rect_num = DrawFeedback(score)
     global window scr_rect centreX centreY windowHeight 
 
-    x_size = scr_rect(3)/15;
-    y_size = scr_rect(4)/60; 
+    x_size = scr_rect(3)/13;
+    y_size = scr_rect(4)/40; 
     rect_size = [0 0 x_size y_size];
     rect_color = [180 180 180]; 
     rect_color_black = [0 0 0];
     % Adjust these values to control the bar's position relative to the image
-    barOffsetX = x_size*5;      % Move the bar right (+) or left (-)
+    barOffsetX = x_size*4;      % Move the bar right (+) or left (-)
     barOffsetY = 0;             % Move the bar down (+) or up (-)
     
     all_rect_coords = zeros(4,20);  % Adjusted for 40 rectangles
@@ -1301,13 +1302,13 @@ function rect_num = DrawFeedback(score)
     Screen('TextFont', window, 'Arial');
     Screen('TextStyle', window, 0);
     
-    label_1 = '  High Craving';
-    label_2 = '  Low Craving';
+    label_1 = '  Higher Craving';
+    label_2 = '  Lower Craving';
     label_1_color = [255 255 255];
     label_2_color = [255 255 255];
     
     % Adjust text positions for the new setup
-    label_1_pos = [centreX + barOffsetX - x_size, centreY - ((rect_start_pos+21)*y_size)]; % Adjusted for 40 rectangles
+    label_1_pos = [centreX + barOffsetX - x_size*.8, centreY - ((rect_start_pos+21)*y_size)]; % Adjusted for 40 rectangles
 %     label_2_pos = [centreX + barOffsetX - x_size, centreY - ((rect_start_pos-3)*y_size)];  % Adjusted for 40 rectangles
     
      % Arrow parameters
@@ -1354,14 +1355,14 @@ end
 function rect_num = DrawFeedbackDownregulation(score)  
     global window scr_rect centreX centreY windowHeight 
     
-    x_size = scr_rect(3) / 15;
-    y_size = scr_rect(4) / 60; 
+    x_size = scr_rect(3) / 13;
+    y_size = scr_rect(4) / 40; 
     rect_size = [0 0 x_size y_size];
     rect_color_white = [180 180 180];  % Initial color (Cyan)
     rect_color_black = [0 0 0];        % Fill color (black)
     
     % Adjust these values to control the bar's position relative to the image
-    barOffsetX = x_size * 5;  % Move the bar right (+) or left (-)
+    barOffsetX = x_size * 4;  % Move the bar right (+) or left (-)
     barOffsetY = 0;            % Move the bar down (+) or up (-)
     labelOffsetY = scr_rect(4) * 0.01;   % 1% of the screen height
 
@@ -1405,15 +1406,15 @@ function rect_num = DrawFeedbackDownregulation(score)
     Screen('TextFont', window, 'Arial');
     Screen('TextStyle', window, 0);
     
-    label_1 = '  High Craving';
-    label_2 = '  Low Craving';
+    label_1 = '  Higher Craving';
+    label_2 = '  Lower Craving';
     
     label_1_color = [255 255 255];
     label_2_color = [255 255 255];
     
     % Adjust text positions for the new setup
 %     label_1_pos = [centreX + barOffsetX - x_size, centreY - ((rect_start_pos + 41) * y_size)]; % Adjusted for 40 rectangles
-    label_2_pos = [centreX + barOffsetX - x_size, centreY - ((rect_start_pos - 3) * y_size)];  % Adjusted for 40 rectangles
+    label_2_pos = [centreX + barOffsetX - x_size*.8, centreY - ((rect_start_pos - 3) * y_size)];  % Adjusted for 40 rectangles
    
     % Arrow parameters
     arrowBaseX = centreX + barOffsetX + (1.5 * x_size); 
@@ -1528,7 +1529,7 @@ function curr_feedback = calculate_feedback()
 %OUTPUTS
 %curr_feedback - feedback value (between 0.1 and 1) for the current TR
 global ROI_PSC PSC_thresh ROI_vals current_TBV_tr temp2 conf 
-baseline_lag_dur = 12; % all calculations to start after these many TRs at the beginning of run
+baseline_lag_dur = 19; % all calculations to start after these many TRs at the beginning of run
 %ALL BOLD PSC values from dynamic ROI
 all_vals = ROI_vals(baseline_lag_dur:end,1); %Taking all the BOLD values so far, for cumulative GLM
 %considering the initial lag
@@ -1600,143 +1601,42 @@ end
 function [block_start, block_end, block_dur, block_start_TR, block_end_TR, block_start_TBV_TR, block_end_TBV_TR, ratings] = VAS_scale(window, scr_rect, instructionTexts, feedback_dir, feedback_file_name, fileID7, p, num_blocks, block_num, blockOrder) 
     global start_time current_TBV_tr TR; 
 
-    % Parameters
-    scaleMin = 1;
-    scaleMax = 10;
-    scaleStep = 1;
-    
-    markerColor = [255, 0, 0]; % Red marker
-    markerWidth = 20;
-    scaleColor = [255, 255, 255]; % Scale color is white
+    % Parameters (removed scale-related parameters)
     textColor = [255, 255, 255]; % Text color is white
-    textSize = scr_rect(4) * 0.03; % Text size as 5% of the screen height
-    smallTextSize = textSize; % Smaller text size for numbers and labels
+    textSize = scr_rect(4) * 0.05; % Text size 
+
     block_start = GetSecs() - start_time;
     block_start_TR = round(block_start / TR) + 1;
     block_start_TBV_TR = current_TBV_tr;
 
-%     % Set the text size ONCE before drawing anything 
-%     Screen('TextSize', window, round(scr_rect(4) * 0.03)); 
-
-    
-
-    % Scale parameters
-    scaleLength = scr_rect(3) * 0.5; 
-    scaleHeight = scr_rect(4) * 0.03; 
-    scaleX = (scr_rect(3) - scaleLength) / 2; 
-    scaleY = scr_rect(4) * 0.6; 
-
-    % Calculate label positions
-    labelOffsetX = scr_rect(3) * 0.1; 
-    labelOffsetY = -12; 
-    label1X = scaleX - labelOffsetX - 2;
-    label1Y = scaleY - labelOffsetY;
-    label2X = scaleX + scaleLength + 24;
-    label2Y = scaleY - labelOffsetY;
-
-    % Define the labels for each question
-    vasLabels = {
-        {'Not at all', 'Extremely'}, 
-        {'Not at all', 'Extremely'}, 
-        {'Not at all', 'Extremely'}
-    }; 
     % Initialize ratings array
+    rating = 5;
     ratings = zeros(1, 3); 
 
-%     % Draw the scale
-%     Screen('FillRect', window, scaleColor, [scaleX, scaleY, scaleX + scaleLength, scaleY + scaleHeight]);
-%     for i = 0:10
-%         DrawFormattedText(window, num2str(i), scaleX + (i / 10) * scaleLength - 10, scaleY + scaleHeight + scr_rect(4) * 0.06, textColor);
-%     end
-
-     % Loop through the three questions
+    % Loop through the three questions
     for questionNum = 1:3
         % Display the current question
         instructionText = instructionTexts{questionNum};
-        currentLabels = vasLabels{questionNum};  % Get labels for this question
 
-
-        % Initial rating position
-       % Initial rating position (corrected calculation)
-        rating = 5; 
-        ratingPosition = scaleX + ((rating - scaleMin) / (scaleMax - scaleMin)) * scaleLength;
-        ratingPosition = round((ratingPosition - scaleX) / (scaleLength / (scaleMax - scaleMin))) * (scaleLength / (scaleMax - scaleMin)) + scaleX;
-
-        % Display the VAS scale and capture user responses
-        startTime = GetSecs();
-        scaleDuration = 10; % 15 seconds per question
-        % Draw the instruction text
-        % Set the text size ONCE before drawing anything
-        Screen('TextSize', window, round(scr_rect(4) * 0.05));
-        DrawFormattedText(window, instructionText, 'center', scr_rect(4) * 0.3, [0 255 255]);
-        
-        Screen('FillRect', window, scaleColor, [scaleX, scaleY, scaleX + scaleLength, scaleY + scaleHeight]);
-    
-        % Draw the rating marker
-        Screen('FillRect', window, markerColor, [ratingPosition - markerWidth/2, scaleY - scaleHeight/2, ratingPosition + markerWidth/2, scaleY + scaleHeight * 1.5]);
-        % Draw the numbers and labels again
-        Screen('TextSize', window, round(scr_rect(4) * 0.035));
-        for i = 1:10
-            DrawFormattedText(window, num2str(i), scaleX + ((i-1) / (scaleMax-scaleMin)) * scaleLength - 10, scaleY + scaleHeight + scr_rect(4) * 0.06, textColor);
-        end
-        % Draw the labels for the current question
-        DrawFormattedText(window, currentLabels{1}, label1X, label1Y, textColor); 
-        DrawFormattedText(window, currentLabels{2}, label2X, label2Y, textColor);
-
-%         DrawFormattedText(window, 'No Craving', label1X, label1Y, textColor);
-%         DrawFormattedText(window, 'High Craving', label2X, label2Y, textColor);
-%     
-        % Flip the screen
+        % Display the instruction text
+        Screen('TextSize', window, textSize);
+        DrawFormattedText(window, instructionText, 'center', 'center', [0 255 255]);
         Screen('Flip', window);
-        
-    
 
+        % Wait for Return key press
         while true
             % Check for key presses (same as before)
             [keyIsDown, ~, keyCode] = KbCheck;
-            if keyIsDown
-                if keyCode(1, KbName('c'))
-                    rating = max(rating - scaleStep, scaleMin);
-                elseif keyCode(1, KbName('d'))
-                    rating = min(rating + scaleStep, scaleMax);
-                elseif keyCode(KbName('Return')) 
+            if keyIsDown     
+                 keyCode(KbName('Return')) 
                     break;
-                end
-
-                % Update rating position (corrected calculation)
-                ratingPosition = scaleX + ((rating - scaleMin) / (scaleMax - scaleMin)) * scaleLength;
-                ratingPosition = round((ratingPosition - scaleX) / (scaleLength / (scaleMax - scaleMin))) * (scaleLength / (scaleMax - scaleMin)) + scaleX;
-
-                % Draw the scale and marker (same as before)
-                Screen('TextSize', window, round(scr_rect(4) * 0.05));
-                DrawFormattedText(window, instructionText, 'center', scr_rect(4) * 0.3, [0 255 255]);
-
-                Screen('FillRect', window, scaleColor, [scaleX, scaleY, scaleX + scaleLength, scaleY + scaleHeight]);
-                Screen('FillRect', window, markerColor, [ratingPosition - markerWidth/2, scaleY - scaleHeight/2, ratingPosition + markerWidth/2, scaleY + scaleHeight * 1.5]);
-
-                % Draw the numbers and labels again
-                Screen('TextSize', window, round(scr_rect(4) * 0.035));
-                for i = 1:10
-                    DrawFormattedText(window, num2str(i), scaleX + ((i-1) / (scaleMax-scaleMin)) * scaleLength - 10, scaleY + scaleHeight + scr_rect(4) * 0.06, textColor);
-                end
-
-                DrawFormattedText(window, currentLabels{1}, label1X, label1Y, textColor); 
-                DrawFormattedText(window, currentLabels{2}, label2X, label2Y, textColor); 
-
-%                 DrawFormattedText(window, 'No Craving', label1X, label1Y, textColor);
-%                 DrawFormattedText(window, 'High Craving', label2X, label2Y, textColor);
-
-                % Flip the screen
-                WaitSecs(0.1);
-                Screen('Flip', window);
             end
         end
+        WaitSecs(0.1);
+        % Store a default rating (since no scale is used)
+        ratings(questionNum) = -1;  % Or any other value you deem appropriate
 
-        % Store the rating for this question
-        ratings(questionNum) =  str2double(sprintf('%.0f', rating)); 
-
-        % Optionally add a short delay between questions
-        WaitSecs(0.5); 
+       
     end
      
 
