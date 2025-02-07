@@ -1,8 +1,7 @@
 %%
-%Last edited by Amir Dakhili on October 15th, 2024
-% latest modifications:
-% conditions now include three images each for 10 seconds
-% thermometer height reduced to 20 rectangles and one sided
+%Last edited by Amir Hossein Dakhili on February 7th, 2025
+%amirhossein.dakhili@myacu.edu.au
+%Australian Catholic University
 %%
 % Please use Backslash for file and folder names in WINDOWS!
 % Hemodynamic lag needs to be considered implicitly by participant
