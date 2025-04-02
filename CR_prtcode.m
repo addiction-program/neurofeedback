@@ -11,9 +11,8 @@ function extractOnsetsAndDurations()
     % Extract relevant variables from log_data
     log_triallist = log_data.log_triallist;
     log_stimOnset = log_data.log_stimOnset;
-    log_triggertimes = log_data.log_triggertimes; 
-    % Extract Trigger Time value
-    trigger_time = log_triggertimes(5,1); % Access 5th cell of the first row equal to 5th trigger
+    
+   
     % Extract onsets
     cannabis_trial_indices = log_triallist(:, 1) >= 1 & log_triallist(:, 1) <= 30; 
     neutral_trial_indices = log_triallist(:, 1) >= 31 & log_triallist(:, 1) <= 60;
@@ -21,8 +20,8 @@ function extractOnsetsAndDurations()
     neutral_onsets = log_stimOnset(neutral_trial_indices, 1);
     
     % Subtract trigger time value from onsets
-    cannabis_onsets = floor((cannabis_onsets - trigger_time) * 1000);
-    neutral_onsets = floor((neutral_onsets - trigger_time) * 1000);
+    cannabis_onsets = floor((cannabis_onsets) * 1000);
+    neutral_onsets = floor((neutral_onsets) * 1000);
     % Create durations with all values set to 4
     durations = {repmat(4,1,30), repmat(4,1,30)};
     
