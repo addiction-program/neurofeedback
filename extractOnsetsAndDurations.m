@@ -15,13 +15,13 @@ function extractOnsetsAndDurations()
        % Extract timings for each condition (in milliseconds)
        %rest_timings = rest_block_timings(:, [1 2]) * 1000;  % MRI block start and end times
        upregulation_timings = Up_block_timings(:, [1 2]) * 1000; 
-       downregulation_timings = Down_block_timings(:, [1 2]) * 1000;
+%        downregulation_timings = Down_block_timings(:, [1 2]) * 1000;
        neutral_timings = Neutral_block_timings(:, [1 2]) * 1000;
 
        % Sort timings in ascending order
        %rest_timings = sortrows(rest_timings);
        upregulation_timings = sortrows(upregulation_timings);
-       downregulation_timings = sortrows(downregulation_timings);
+%        downregulation_timings = sortrows(downregulation_timings);
        neutral_timings = sortrows(neutral_timings);
 
        % Create output PRT file
@@ -43,7 +43,7 @@ function extractOnsetsAndDurations()
        fprintf(fileID, '\n'); 
        fprintf(fileID, 'NrOfConditions:  3\n'); 
 
-       % Write Rest condition information
+%        % Write Rest condition information
 %        fprintf(fileID, 'Rest\n');
 %        fprintf(fileID, '%d\n', size(rest_timings, 1)); 
 %        for i = 1:size(rest_timings, 1)
@@ -67,13 +67,13 @@ function extractOnsetsAndDurations()
        end
        fprintf(fileID, 'Color: 0 85 0\n\n'); 
 
-       % Write Downregulation condition information
-       fprintf(fileID, 'Downregulation\n'); 
-       fprintf(fileID, '%d\n', size(downregulation_timings, 1)); 
-       for i = 1:size(downregulation_timings, 1)
-           fprintf(fileID, '%d %d\n', round(downregulation_timings(i, 1)), round(downregulation_timings(i, 2))); 
-       end
-       fprintf(fileID, 'Color: 0 0 85\n\n'); 
+%        % Write Downregulation condition information
+%        fprintf(fileID, 'Downregulation\n'); 
+%        fprintf(fileID, '%d\n', size(downregulation_timings, 1)); 
+%        for i = 1:size(downregulation_timings, 1)
+%            fprintf(fileID, '%d %d\n', round(downregulation_timings(i, 1)), round(downregulation_timings(i, 2))); 
+%        end
+%        fprintf(fileID, 'Color: 0 0 85\n\n'); 
 
        
 
