@@ -1,17 +1,57 @@
 function CR_fMRI_main
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%% -- CUE REACTIVITY fMRI TASK --
-%%%%%
-%%%%%
-%%%%% Modified by Amir Hossein Dakhili
-%%%%% Email: amirhossein.dakhili@myacu.edu.au
-%%%%% Last update: 2-Apr-2025
-%%%%%
-%%%%% Notes:
-%%%%% Use Enter to quit task. 
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%% -- CUE REACTIVITY fMRI TASK --
+    %%%%%
+    %%%%% This script implements a Cue Reactivity fMRI task using Psychtoolbox.
+    %%%%% It is designed to present visual stimuli (images) and collect
+    %%%%% behavioral responses (VAS ratings) from participants while
+    %%%%% fMRI data is being acquired. The task flow includes
+    %%%%% initialization, participant information input, stimulus loading,
+    %%%%% pre-task and post-task Visual Analog Scale (VAS) questionnaires,
+    %%%%% the main stimulus presentation loop (images interleaved with
+    %%%%% fixation crosses), and saving of log data.
+    %%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%% Authorship and Version History:
+    %%%%% Original Author: Aniko Kusztor
+    %%%%% Email: aniko.kusztor@monash.edu
+    %%%%% Last Original Update: 21-Jan-2024
+    %%%%%
+    %%%%% Modified by: Amir Hossein Dakhili
+    %%%%% Email: amirhossein.dakhili@myacu.edu.au
+    %%%%% Australian Catholic University
+    %%%%% Last Modified: June 2025
+    %%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%% Important Considerations:
+    %%%%% - This script requires **Psychtoolbox-3 (PTB-3)** for stimulus presentation and
+    %%%%%   user interaction. Ensure it is properly installed and configured in MATLAB.
+    %%%%% - The `root_path` variable **MUST BE UPDATED** to the correct project directory
+    %%%%%   on the system where the script is being run. Incorrect paths will lead to errors
+    %%%%%   in loading stimuli and saving logs.
+    %%%%% - Stimulus presentation times and jitter durations are loaded from an
+    %%%%%   external CSV file (`EPRIME_STIM_ORDER.csv`). Ensure this file is
+    %%%%%   correctly formatted and present in the `root_path`.
+    %%%%% - The trial index ranges for 'Cannabis' (1-30) and 'Neutral' (31-60)
+    %%%%%   are hardcoded within the `extractOnsetsAndDurations` function (if used
+    %%%%%   separately for PRT creation, or if similar logic is reintegrated).
+    %%%%%   Verify these ranges match your `EPRIME_STIM_ORDER.csv` and experimental design.
+    %%%%% - Debug mode (`answerdebug = 1`) allows for quicker testing by skipping
+    %%%%%   participant info entry and VAS questions. Remember to set it to `0` for
+    %%%%%   actual participant runs.
+    %%%%% - The script includes a **scanner trigger wait** (`SCANNER_KEY = 'T'`).
+    %%%%%   Ensure your MRI scanner is configured to send a 'T' key press at the
+    %%%%%   start of the functional run.
+    %%%%% - Data (timing information, VAS ratings, and task parameters) is saved
+    %%%%%   into a `LOG_FILES` subfolder within the `root_path`. This folder will
+    %%%%%   be created if it doesn't exist.
+    %%%%% - Early task termination is possible by pressing the **ESCAPE key**. This
+    %%%%%   will save a partial log file with a `_TERMINATED_log` suffix.
+    %%%%% - Press **'E' (or RETURN/ENTER)** to proceed through initial instructions,
+    %%%%%   navigate VAS questions, and exit the task gracefully at the end.
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% init matlab
 % clear all variables and close all figures
 sca;
