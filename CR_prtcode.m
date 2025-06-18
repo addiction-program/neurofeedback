@@ -1,4 +1,68 @@
 function extractOnsetsAndDurations()
+ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % extractOnsetsAndDurations
+    % Developed by Amir Hossein Dakhili
+    % amirhossein.dakhili@myacu.edu.au
+    % Australian Catholic University
+    % Created: April 2024
+    % Last Modified: June 2025
+    %
+    % This script is designed to process experimental log data, typically
+    % generated from a psychological experiment, and convert it into a
+    % BrainVoyager PRT (Protocol) file. A PRT file is crucial for fMRI
+    % data analysis, as it defines the onset and offset times of different
+    % experimental conditions, allowing for the creation of design matrices
+    % to analyze brain responses.
+    %
+    % Key Features:
+    % - **User Interface for File Selection**: Provides a user-friendly dialog
+    %   to select the input `.mat` log file, ensuring flexibility for
+    %   different datasets.
+    % - **Robust Data Loading**: Includes error handling for file loading,
+    %   making the script more robust to invalid file selections.
+    % - **Condition-Specific Onset Extraction**: Identifies and extracts
+    %   stimulus onset times for 'Cannabis' and 'Neutral' trial types based
+    %   on predefined trial index ranges within `log_triallist`.
+    % - **Time Adjustment and Conversion**:
+    %   - Adjusts onset times by adding a fixed 3000 ms (3 seconds), which
+    %     might account for scanner trigger delays or an initial buffer period.
+    %   - Converts all timings from seconds (as assumed from `log_stimOnset`)
+    %     to milliseconds, the required unit for BrainVoyager PRT files.
+    % - **Fixed Duration Calculation**: Automatically calculates stimulus
+    %   offset times by adding a fixed duration of 4000 ms (4 seconds) to
+    %   each onset, simplifying protocol creation for fixed-duration events.
+    % - **PRT File Generation**: Creates a new BrainVoyager PRT file with a
+    %   standard header, specifying file version, time resolution, experiment
+    %   name, and default display colors for the protocol.
+    % - **Formatted Output**: Writes the onset and offset times for 'Neutral'
+    %   and 'Cannabis' conditions with precise formatting to ensure
+    %   compatibility and readability within BrainVoyager.
+    % - **Color Assignment**: Assigns distinct display colors for each condition
+    %   within the PRT file (e.g., 'Neutral' as dark red, 'Cannabis' as dark green)
+    %   for clear visual differentiation during analysis.
+    %
+    % Important Considerations:
+    % - **Input Data Structure**: This script assumes the input `.mat` file
+    %   contains specific variables: `log_triallist` (a matrix where the first
+    %   column defines trial types/indices) and `log_stimOnset` (a matrix where
+    %   the first column contains stimulus onset times in seconds). Any deviation
+    %   from this structure will require modifications to the script's data
+    %   extraction logic.
+    % - **Trial Index Ranges**: The trial index ranges for 'Cannabis' (1-30)
+    %   and 'Neutral' (31-60) are hardcoded. These values must be accurate
+    %   for your specific experimental design.
+    % - **Timing Adjustment Value**: The `+3000` ms adjustment to onsets is
+    %   a critical parameter. Ensure this value correctly reflects any
+    %   necessary delays (e.g., scanner pre-scan, initial fixation period)
+    %   in your experiment relative to your logged onset times.
+    % - **Fixed Stimulus Duration**: The `+4000` ms duration for all stimuli
+    %   is also a hardcoded assumption. If your stimuli have variable durations,
+    %   you will need to adjust the duration calculation accordingly, potentially
+    %   by extracting durations from your log file.
+    % - **Output Filename**: The output PRT file is named by appending `.prt`
+    %   to the input `.mat` filename. If a different naming convention is desired,
+    %   the `outputFilename` variable should be modified.
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Select input log.mat file
     [filename, pathname] = uigetfile('*.mat', 'Select the input log.mat file');
     fullpath = fullfile(pathname, filename); 
@@ -20,8 +84,8 @@ function extractOnsetsAndDurations()
     neutral_onsets = log_stimOnset(neutral_trial_indices, 1);
     
     % Subtract trigger time value from onsets
-    cannabis_onsets = floor((cannabis_onsets) * 1000);
-    neutral_onsets = floor((neutral_onsets) * 1000);
+    cannabis_onsets = floor(((cannabis_onsets) * 1000)+3000);
+    neutral_onsets = floor(((neutral_onsets) * 1000)+3000);
     % Create durations with all values set to 4
     durations = {repmat(4,1,30), repmat(4,1,30)};
     
