@@ -1,57 +1,84 @@
-%%
-%Last edited by Amir Hossein Dakhili on February 7th, 2025
+%%%%%%%%%%%%%%%%%Neurofeedback script%%%%%%%%%%%%%%%%%
+%Developed by Amir Hossein Dakhili
 %amirhossein.dakhili@myacu.edu.au
 %Australian Catholic University
-%%
-% Please use Backslash for file and folder names in WINDOWS!
-% Hemodynamic lag needs to be considered implicitly by participant
-% 1st is target ROI and 2nd is confound
+%Created:April 2024
+%Last Modified:May 2025
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 warning off; % Suppresses warnings
 sca; % Closes all open Psychtoolbox screens
 clear all % Clears the workspace
 
 % Declare global variables
-global TR windowHeight window scr_rect centreX centreY escapeKey start_time current_TBV_tr ROI_PSC ROI_vals PSC_thresh port_issue imageTextures psc_data FB_timings;
+global TR windowHeight window scr_rect centreX centreY escapeKey start_time current_TBV_tr ROI_PSC ROI_vals PSC_thresh port_issue imageTextures FB_timings current_psc_history resid_BOLD_history feedback_mode TEST run_no Main_dir;
 
 %% Needs Change
 TR = 1; % Repetition time in seconds
-feedback_dir = 'C:\Users\NFB-user\Documents\NFB\Cue-reactivity latest\3-Current_MR_CRtask_v1_after2ndScan\Current_MR_CRtask_v1\MR_CRtask_v1\NFB'; % Path to the feedback folder
+run_no = input('Enter the run number (e.g., 1, 2, 3): ');
+pp_no = input('Enter participant number (e.g., 1, 2, 3): ');
+pp_name = input('Enter participant name: ', 's');
+pre_vas = input('Do you want to show pre vas questions? (1 = Yes, 0=No): ');
+
+%%%%%%%%%%%%%%%%%% Main Directory: Change this whenever using in a new system %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Main_dir = '/path/to/your/project';
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Create participant's run directory if it doesn't exist
+participant_dir = fullfile(Main_dir, ['Participant_' num2str(pp_no) '_run' num2str(run_no)]);
+if ~exist(participant_dir, 'dir')
+    mkdir(participant_dir);
+    fprintf('Created directory: %s\n', participant_dir);
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if run_no == 1
+    feedback_dir = fullfile(Main_dir, 'NFB_RTP_1'); % Path to the feedback folder
+elseif run_no == 2
+    feedback_dir = fullfile(Main_dir, 'NFB_RTP_2'); % Path to the feedback folder
+elseif run_no == 3
+    feedback_dir = fullfile(Main_dir, 'NFB_RTP_3'); % Path to the feedback folder 
+elseif run_no == 4
+    feedback_dir = fullfile(Main_dir, 'NFB_RTP_4'); % Path to the feedback folder
+end
+
 feedback_file_name = 'NFB'; % Prefix for feedback files
-run_no = 1; % Run number
+num_blocks = 1; % Number of times to repeat the run
+
+%%%%feedback mode switch%%%%
+% unweighted feedback = 1
+% weighted feedback = 2
+feedback_mode = 2;
+
+%%%%Screen mode switch%%%%
+% 1 = test small screen
+% 0 = full screen
+TEST = 0;
+
 
 %% Optional to change
-block_dur_TR = 50; % Duration of the craving block in TRs
-rest_dur_TR = 20; % Duration of the rest block in TRs
-cue_dur_TR = 5; % Duration of the cue in TRs
-
-%% Needs change 
-pp_no = 20;
-pp_name = 'Valentina';
-num_blocks = 1; % Number of times to repeat the craving task and VAS scale
-
+block_dur_TR = 30; % Duration of the regulation/neutral blocks in TRs
+Instruction_dur_TR = 5; % Duration of the instructions in TRs
 input('Press Enter to start >>> ','s'); % Wait for user input to start
 
-block_init = 0.5;
-block = block_init;
 
 % Initialize variables
-MW_blocks = 0;
 craving_blocks = 0;
 Down_block_timings = [];
-rest_block_timings = [];
 VAS_block_timings = [];
 cue_timings = [];
-FB_timings = {}; % Initialize as a cell array
-rest_blocks_mean = [];
-rest_blocks_TRs = [];
-psc_data = [];
+FB_timings = []; 
 ROI_PSC = [];
 port_issue = [];
 PSC_thresh = 2; % Threshold for PSC calculation
 Up_block_timings = [];
 Neutral_block_timings = [];
 Fix_block_timings = [];
+current_psc_history = [];
+resid_BOLD_history = [];
+ROI_vals = [];
+cravingImageNumbers = [];
 
 
 % Open files to write cue and block timings
@@ -61,7 +88,7 @@ fileID3 = fopen(fullfile([pwd '\Participant_' num2str(pp_no) '_run' num2str(run_
 fileID4 = fopen(fullfile([pwd '\Participant_' num2str(pp_no) '_run' num2str(run_no)],['\' date '_pp_' num2str(pp_no) '_run_' num2str(run_no) 'Neutral_block_timing.txt']), 'w');
 fileID5 = fopen(fullfile([pwd '\Participant_' num2str(pp_no) '_run' num2str(run_no)],['\' date '_pp_' num2str(pp_no) '_run_' num2str(run_no) 'Upregulation_block_timing.txt']), 'w');
 fileID6 = fopen(fullfile([pwd '\Participant_' num2str(pp_no) '_run' num2str(run_no)],['\' date '_pp_' num2str(pp_no) '_run_' num2str(run_no) 'Downregulation_block_timing.txt']), 'w');
-fileID7 = fopen(fullfile([pwd '\Participant_' num2str(pp_no) '_run' num2str(run_no)],['\' date '_pp_' num2str(pp_no) '_run_' num2str(run_no) '_VAS_results.txt']), 'w');
+fileID7 = fopen(fullfile([pwd '\Participant_' num2str(pp_no) '_run' num2str(run_no)],['\' date '_pp_' num2str(pp_no) '_run_' num2str(run_no) 'VAS_results.txt']), 'w');
 
 % Store file IDs as variables
 fileID1_var = fileID1; 
@@ -73,13 +100,13 @@ fileID6_var = fileID6;
 fileID7_var = fileID7;
 
 % Write general information to the files
-PrintGeneralInfo(fileID1,date,pp_name,run_no,num_blocks,block_dur_TR);
-PrintGeneralInfo(fileID2,date,pp_name,run_no,num_blocks,block_dur_TR);
-PrintGeneralInfo(fileID3,date,pp_name,run_no,num_blocks,block_dur_TR);
-PrintGeneralInfo(fileID4,date,pp_name,run_no,num_blocks,block_dur_TR);
-PrintGeneralInfo(fileID5,date,pp_name,run_no,num_blocks,block_dur_TR);
-PrintGeneralInfo(fileID6,date,pp_name,run_no,num_blocks,block_dur_TR);
-PrintGeneralInfo(fileID7,date,pp_name,run_no,num_blocks,block_dur_TR);
+PrintGeneralInfo(fileID1,date,pp_name,run_no);
+PrintGeneralInfo(fileID2,date,pp_name,run_no);
+PrintGeneralInfo(fileID3,date,pp_name,run_no);
+PrintGeneralInfo(fileID4,date,pp_name,run_no);
+PrintGeneralInfo(fileID5,date,pp_name,run_no);
+PrintGeneralInfo(fileID6,date,pp_name,run_no);
+PrintGeneralInfo(fileID7,date,pp_name,run_no);
 
 fprintf(fileID1, '\n============================================================================\n');
 fprintf(fileID1, '\n\n_____________________________Text timing information:__________________________');
@@ -94,7 +121,7 @@ fprintf(fileID5, '\n\n______________________________Upregulation Block timing in
 fprintf(fileID6, '\n============================================================================\n');
 fprintf(fileID6, '\n\n______________________________Downregulation Block timing information:__________________________');
 fprintf(fileID7, '\n============================================================================\n');
-fprintf(fileID7, '\n\n______________________________VAS Results:__________________________');
+fprintf(fileID7, '\n\n______________________________VAS_Results:__________________________\n');
 
 
 saveroot = [pwd '\Participant_' num2str(pp_no) '_run' num2str(run_no) '\'];
@@ -123,7 +150,7 @@ try
     green = [0 255 0];
     
     % Open the Psychtoolbox window
-    TEST=0; 
+  
     if TEST==1
         [window, scr_rect] = PsychImaging('OpenWindow', ChosenScreen, black, [0 0 800 600]);
     else
@@ -133,40 +160,19 @@ try
 
     [windowWidth, windowHeight] = Screen('WindowSize', window); 
     % Define the VAS questions HERE, before the experiment loop
-%     vasQuestions = { ...
-%         'How much do you feel like smoking cannabis on a scale of: \n(1=not at all; 10=Extremely)', ...
-%         'How distracted or focused are you on a scale of: \n(1=Very distracted; 10=Very focused)', ...
-%         'How anxious do you feel on a scale of: \n(1=No anxiety at all; 10=Highest level of anxiety you could possibly feel)'
-%     };
+
     vasQuestions = { ...
         'How much do you feel like smoking cannabis right now?', ...
         'How focused are you right now?', ...
         'How anxious do you feel right now?'
     };
  % VAS scale BEFORE trigger 
-%%comment out for down regulation%%%
- blockOrder = { 'V'};
- run_vas_block = 1;      % Add this line to define the variable
-    % VAS scale BEFORE trigger 
-    if run_vas_block 
-       
-%         Text = 'RATE CRAVINGS';  % The instruction text
-%         
-%         Screen('TextSize', window, round(windowHeight * 0.07));
-%         Screen('TextFont', window, 'Arial');                    
-%         Screen('TextStyle', window, 0);  
-%         DrawFormattedText(window,Text,'center','center',Cyan);
-%         Screen('Flip',window);
-%         WaitSecs(5); % Display the instruction for 5 seconds
-
+    blockOrder = { 'V'};
+ 
+    if pre_vas == 1 
 
         % Call VAS_scale with vas_start_time
-        [~, ~, ~, ~, ~, ~, ~, ratings] = VAS_scale(window, scr_rect, vasQuestions, feedback_dir, feedback_file_name, fileID7, 1, num_blocks, 1, blockOrder);  
-
-        % Write the ratings to the file (fileID7)
-%         for i = 1:length(ratings)
-            fprintf(fileID7, '%d        %.2f        %d\n', 1, 0, ratings);  % Using 0 for block_end as it's before the trigger
-%         end
+        [~, ~, ~, ~, ~, ~, ~, ratings] = VAS_scale(window, scr_rect, vasQuestions, feedback_dir, feedback_file_name, fileID7, num_blocks, 1, blockOrder);  
     end
 
 
@@ -175,7 +181,15 @@ try
     [windowWidth, windowHeight] = Screen('WindowSize', window); 
 
     % Get a list of all image files in the image directory
-    imageDir = fullfile('C:\Users\NFB-user\Documents\NFB\Cue-reactivity latest\3-Current_MR_CRtask_v1_after2ndScan\Current_MR_CRtask_v1\MR_CRtask_v1\TRIGGER_B_Media');
+    if run_no == 1
+        imageDir = fullfile(Main_dir, 'NFB_TASK_IMAGES', 'Run_1');
+    elseif run_no == 2
+          imageDir = fullfile(Main_dir, 'NFB_TASK_IMAGES', 'Run_2');
+    elseif run_no == 3
+          imageDir = fullfile(Main_dir, 'NFB_TASK_IMAGES', 'Run_3');
+    elseif run_no == 4
+          imageDir = fullfile(Main_dir, 'NFB_TASK_IMAGES', 'Run_4');
+    end
     imageFiles = dir(fullfile(imageDir, 'C*.png')); % Assuming all images start with 'C'
 
     % Number of images available
@@ -195,13 +209,11 @@ try
     % Define the keyboard keys that are listened for
     KbName('UnifyKeyNames');
     escapeKey = KbName('ESCAPE');
-    triggerKey = KbName('T'); 
+    triggerKey = KbName('T');
+    nextKey = KbName('E');
 
     %----------------------------------------------------------------------
-    %Screen before trigger
-    % FIRST CUE
-%     Text = 'A cross will appear now... \n \n Please look at the cross\n\n Press `t` to start.';
-    Text = 'When you see pictures of cannabis, change the craving bar. \n \n When you see pictures of anything else, simply look.';
+    Text = 'Waiting for the scanner...';
     Screen('TextSize', window, round(windowHeight * 0.05));
     Screen('TextFont', window, 'Arial');                    
     Screen('TextStyle', window, 0);  
@@ -215,30 +227,14 @@ try
     dlmwrite([feedback_dir '\' feedback_file_name '-2.rtp'],[2,0,0,-1],'delimiter',' ');
 
     start_time = GetSecs();
-    ROI_vals = [];
-
+   
     fprintf(fileID1, '\nRun start time (MRI): \t\t%d\n', start_time);
     fprintf(fileID2, '\nRun start time (MRI): \t\t%d \n', start_time);
     fprintf(fileID3, '\nRun start time (MRI): \t\t%d \n', start_time);
     fprintf(fileID4, '\nRun start time (MRI): \t\t%d \n', start_time);
     fprintf(fileID5, '\nRun start time (MRI): \t\t%d \n', start_time);
     fprintf(fileID6, '\nRun start time (MRI): \t\t%d \n', start_time);
-    fprintf(fileID7, '\n\n MRI Block End Time     Rating \n\n'); 
-
-
-    elapsed = GetSecs() - start_time;
-    while elapsed < 10 % Proceed at TR=11 (after 10 secs) to accommodate initial TBV lags
-        elapsed = GetSecs() - start_time;
-        current_TBV_tr = rt_load_BOLD(feedback_dir, feedback_file_name);
-    end
-
-    fprintf(fileID1, 'TBV start TR: \t\t%f ', current_TBV_tr);
-    fprintf(fileID2, 'TBV start TR: \t\t%f ', current_TBV_tr);
-    fprintf(fileID3, 'TBV start TR: \t\t%f ', current_TBV_tr);
-    fprintf(fileID4, 'TBV start TR: \t\t%f ', current_TBV_tr);
-    fprintf(fileID5, 'TBV start TR: \t\t%f ', current_TBV_tr);
-    fprintf(fileID6, 'TBV start TR: \t\t%f ', current_TBV_tr);
-
+   
     %----------------------------------------------------------------------
     % cue start, cue end, cue duration
     fprintf(fileID1, '\n\n MRI Cue start     MRI Cue end     MRI Cue duration    TBV Cue start TR    TBV Cue end TR    TBV Cue duration TR \n\n');
@@ -257,36 +253,44 @@ try
     % block start, block end, block duration
     fprintf(fileID6, '\n\n MRI Block start     MRI Block end     MRI Block duration   TBV Block start TR    TBV Block end TR   TBV Block duration TR \n\n');
     %----------------------------------------------------------------------
+    current_TBV_tr = rt_load_BOLD(feedback_dir, feedback_file_name);
+    
+
+    Text = 'When you see pictures of cannabis, change the craving bar. \n \n When you see pictures of anything else, simply look.';
+    [cue_start, cue_end, ~, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = WriteBaseInstruction(Text, Cyan, Instruction_dur_TR + 5, feedback_dir, feedback_file_name);
+                            cue_dur = cue_end - cue_start;
+                            cue_timings = [cue_timings; cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1];
+                            fprintf(fileID1, '%f  %f  %f  %f  %f  %f\n\n', [cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1]);
+
+
+    
     %% Block Switches (Set these to 1 to include the block, 0 to exclude)
     run_neutral_block = 1;
-    run_rest_block = 1; 
     run_fixation_block = 1;
     run_upregulation_block = 1;
     run_downregulation_block = 1;
     run_vas_block = 1;
-    run_practice_block = 1; % Add this line
-        % Define the block order (you can rearrange this as needed)
-      % R=rest
+        % Define the block order 
       % V=VAS
       % F=fixation cross
       % U=up regulation
       % N=Neutral Pic
       % D=down regulation
-      % PR=practice 
       
-%%%upregulation run
 
-      blockOrder = { 'F', 'N', 'F', 'U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F', 'V'};
-     
-%%%downregulation run
+      %%%%%%%%%%%%%Block order%%%%%%%%%%%%%
+      if run_no == 1 || run_no == 3
+        %%%upregulation run
+
+        blockOrder = { 'F', 'N', 'F', 'U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'N', 'F','U', 'F', 'V'};
+      elseif run_no == 2 || run_no == 4
+
+        %%%downregulation run
  
-      %blockOrder = { 'F', 'N', 'D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F', 'V'};
-   
+      blockOrder = { 'F', 'N', 'F', 'D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'N', 'F','D', 'F', 'V'};
 
-% Declare cravingImageNumbers before the loop
-    cravingImageNumbers = []; % Initialize as empty  
-    
-    
+      end
+
     
    % Start of the experiment loop
     for block_num = 1:num_blocks
@@ -303,115 +307,12 @@ try
 
             switch currentBlock
 
-                case 'PR' % Practice block
-                if run_practice_block && block_num == 1 % Only run at the beginning
-                    
-                    % Detailed instructions for the whole task
-                    Text = 'Welcome to the practice run!\n\nIn this experiment, you will practice different tasks related to your craving. \n\nFirst, you will see images and try to INCREASE your craving. \n\nNext, you will see images and try to DECREASE your craving. \n\nThen, you will simply WATCH images without trying to change your craving. \n\nFinally, you will RATE your craving on a scale.';
-                    [~, ~, ~, ~, ~, ~, ~] = WriteInstruction(Text, Cyan, cue_dur_TR + 20, feedback_dir, feedback_file_name); 
-                    % Instruction after upregulation practice
-                    Text = 'Now, you will try to INCREASE your craving when you see the images.';
-                    [~, ~, ~, ~, ~, ~, ~] = WriteInstruction(Text, Cyan, cue_dur_TR, feedback_dir, feedback_file_name); 
-                    % Short practice blocks (adjust durations as needed)
-                    [~, ~, ~, ~, ~, ~, ~] = Upregulation_feedback(10, feedback_dir, feedback_file_name, imageTextures, p, selectedImageIndices, allSelectedImages, block_num, blockOrder);
-                    
-                    % Instruction after upregulation practice
-                    Text = 'Now, you will try to DECREASE your craving when you see the images.';
-                    [~, ~, ~, ~, ~, ~, ~] = WriteInstruction(Text, Cyan, cue_dur_TR, feedback_dir, feedback_file_name); 
-
-                    [~, ~, ~, ~, ~, ~, ~] = Downregulation_feedback(10, feedback_dir, feedback_file_name, imageTextures, p, selectedImageIndices, allSelectedImages, block_num, blockOrder);
-                    
-                    % Instruction after downregulation practice
-                    Text = 'Next, you will simply WATCH the images without trying to change your craving.';
-                    [~, ~, ~, ~, ~, ~, ~] = WriteInstruction(Text, Cyan, cue_dur_TR, feedback_dir, feedback_file_name); 
-
-                    [~, ~, ~, ~, ~, ~, ~] = Neutral_control(10, feedback_dir, feedback_file_name, imageDir, cravingImageNumbers, p);
-                    
-                    % Instruction before VAS practice
-                    Text = 'Finally, you will RATE your craving on a scale.';
-                    [~, ~, ~, ~, ~, ~, ~] = WriteInstruction(Text, Cyan, cue_dur_TR, feedback_dir, feedback_file_name); 
-
-                    [~, ~, ~, ~, ~, ~, ~] = VAS_scale(window, scr_rect, 'Practice rating', feedback_dir, feedback_file_name, fileID7, p, num_blocks, block_num, blockOrder);
-                    
-                    run_practice_block = 0; % Ensure this block runs only once
-                    
-                    run_practice_block = 0; % Ensure this block runs only once
-                end
-
-                case 'R' 
-                    if run_rest_block
-                        % Baseline Rest period
-                        [block_start, block_end, block_dur, block_start_TR, block_end_TR, block_start_TBV_TR, block_end_TBV_TR] = DrawFixationCross(grey, rest_dur_TR+40, feedback_dir, feedback_file_name); 
-                        rest_block_timings = [rest_block_timings; block_start, block_end, block_dur, block_start_TBV_TR, block_end_TBV_TR, block_end_TBV_TR - block_start_TBV_TR + 1];
-                        fprintf(fileID3, '%f  %f  %f  %f  %f  %f\n', [block_start, block_end, block_dur, block_start_TBV_TR, block_end_TBV_TR, block_end_TBV_TR - block_start_TBV_TR + 1]);
-                        rest_blocks_TRs = [rest_blocks_TRs; block_start_TR, block_end_TR]; 
-
-                        trial_history = [];
-                        baseline_lag_dur = 12;
-                        rest_calc_start_TR = rest_blocks_TRs(end, 1) + 13;
-
-                        if current_TBV_tr > rest_calc_start_TR
-                            if current_TBV_tr < rest_blocks_TRs(end, 2)
-                                calc_interval = rest_calc_start_TR:current_TBV_tr;
-                            else 
-                                calc_interval = rest_calc_start_TR:rest_blocks_TRs(end, 2);
-                            end
-
-                            all_vals = ROI_vals(baseline_lag_dur:end, 1);
-                            all_conf_vals = ROI_vals(baseline_lag_dur:end, 2); 
-
-                            [beta, ~, stats] = glmfit(all_conf_vals - mean(all_conf_vals), all_vals);
-                            resid_BOLD = stats.resid + beta(1);
-                            rest_mean = mean(resid_BOLD(calc_interval - baseline_lag_dur + 1: end)); 
-
-                        else
-                            rest_mean = 0;
-                        end
-                        rest_blocks_mean = [rest_blocks_mean; rest_mean];
-                        
-                    end 
-
                 case 'U'
                     if run_upregulation_block
-%                         % Check for first 'V' and first block
-%                         if p == find(strcmp(blockOrder, 'U'), 1) && block_num == 1
-%                    
-%                             % CUE before craving task
-%                             Text = 'Soon, you will see an \ninstruction to upregulate your craving on screen.';
-%                             [cue_start, cue_end, ~, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = WriteInstruction(Text, Cyan, cue_dur_TR, feedback_dir, feedback_file_name);
-%                             cue_dur = cue_end - cue_start;
-%                             cue_timings = [cue_timings; cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1];
-%                             fprintf(fileID1, '%f  %f  %f  %f  %f  %f\n\n', [cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1]);
-%     
-%                             % Craving neurofeedback task
-%                             current_TBV_tr = rt_load_BOLD(feedback_dir, feedback_file_name);
-%                             craving_blocks = craving_blocks + 1;
-%     
-%                             % craving CUE
-%                             Text = 'While you view images, \n try to increase your craving for the cannabis.';
-%                             [cue_start, ~, ~, cue_start_TR, ~, cue_start_TBV_TR, ~] = WriteInstruction(Text, Cyan, cue_dur_TR, feedback_dir, feedback_file_name);
-%                             Text = 'Score bar will increase with more craving.';
-%                             WriteInstruction(Text, Cyan, cue_dur_TR - 2, feedback_dir, feedback_file_name);
-%                             Text = 'Start:';
-%                             WriteInstruction(Text, Cyan, cue_dur_TR - 3, feedback_dir, feedback_file_name);
-%                             for countdown = 3:-1:1
-%                                 Text = num2str(countdown);
-%                                 if countdown > 1
-%                                     WriteInstruction(Text, Cyan, cue_dur_TR - 4, feedback_dir, feedback_file_name);
-%                                 else
-%                                     [~, cue_end, ~, ~, cue_end_TR, ~, cue_end_TBV_TR] = WriteInstruction(Text, Cyan, cue_dur_TR - 4, feedback_dir, feedback_file_name);
-%                                 end
-%                             end
-%     
-%                             cue_dur = cue_end - cue_start;
-%                             cue_timings = [cue_timings; cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1];
-%                             fprintf(fileID1, '%f  %f  %f  %f  %f  %f\n\n', [cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1]);
-%     
-%                             
-%                         else
+
                             % CUE before craving task
                                 Text = 'GET READY TO \n INCREASE CRAVING BAR  ';
-                            [cue_start, cue_end, ~, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = UpWriteInstruction(Text, Cyan, cue_dur_TR, feedback_dir, feedback_file_name);
+                            [cue_start, cue_end, ~, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = UpWriteInstruction(Text, Cyan, Instruction_dur_TR, feedback_dir, feedback_file_name);
                             cue_dur = cue_end - cue_start;
                             cue_timings = [cue_timings; cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1];
                             fprintf(fileID1, '%f  %f  %f  %f  %f  %f\n\n', [cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1]);
@@ -449,41 +350,10 @@ try
                     if run_neutral_block
                         % CUE before craving task
                             Text = 'GET READY TO SIMPLY LOOK';
-                            [cue_start, cue_end, ~, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = WriteInstruction(Text, Cyan, cue_dur_TR, feedback_dir, feedback_file_name);
+                            [cue_start, cue_end, ~, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = WriteInstruction(Text, Cyan, Instruction_dur_TR, feedback_dir, feedback_file_name);
                             cue_dur = cue_end - cue_start;
                             cue_timings = [cue_timings; cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1];
                             fprintf(fileID1, '%f  %f  %f  %f  %f  %f\n\n', [cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1]);
-
-%                         if p == find(strcmp(blockOrder, 'N'), 1) && block_num == 1 
-%                             % Instruction before neutral block
-%                             Text = 'Now, Please simply watch the images. \n There is no need to try to regulate or change anything.';
-%                             [cue_start, cue_end, cue_dur, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = WriteInstruction(Text, Cyan, cue_dur_TR, feedback_dir, feedback_file_name);
-%     
-%                             Text = 'Start:';
-%                             WriteInstruction(Text, Cyan, cue_dur_TR - 3, feedback_dir, feedback_file_name);
-%                             for countdown = 3:-1:1
-%                                 Text = num2str(countdown);
-%                                 if countdown > 1
-%                                     WriteInstruction(Text, Cyan, cue_dur_TR - 4, feedback_dir, feedback_file_name);
-%                                 else
-%                                     [~, cue_end, ~, ~, cue_end_TR, ~, cue_end_TBV_TR] = WriteInstruction(Text, Cyan, cue_dur_TR - 4, feedback_dir, feedback_file_name);
-%                                 end
-%                             end
-%     
-%                             cue_dur = cue_end - cue_start;
-%                             cue_timings = [cue_timings; cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1];
-%                             fprintf(fileID1, '%f  %f  %f  %f  %f  %f\n\n', [cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1]);
-%                             
-%                         else
-%                             % CUE before craving task
-%                             Text = 'Now, please simply watch the images. \nThere is no need to try to regulate or change anything.';
-%                             [cue_start, cue_end, ~, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = WriteInstruction(Text, Cyan, cue_dur_TR, feedback_dir, feedback_file_name);
-%                             cue_dur = cue_end - cue_start;
-%                             cue_timings = [cue_timings; cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1];
-%                             fprintf(fileID1, '%f  %f  %f  %f  %f  %f\n\n', [cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1]);
-%                         end
-%     
-
 
                         % BLANK
                         BlankOut(1, feedback_dir, feedback_file_name);
@@ -500,57 +370,13 @@ try
                     if run_downregulation_block
                         % CUE before craving task
                             Text = 'GET READY TO \n DECREASE CRAVING BAR';
-                            [cue_start, cue_end, ~, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = DownWriteInstruction(Text, Cyan, cue_dur_TR, feedback_dir, feedback_file_name);
+                            [cue_start, cue_end, ~, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = DownWriteInstruction(Text, Cyan, Instruction_dur_TR, feedback_dir, feedback_file_name);
                             cue_dur = cue_end - cue_start;
                             cue_timings = [cue_timings; cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1];
                             fprintf(fileID1, '%f  %f  %f  %f  %f  %f\n\n', [cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1]);
                               % Downregulation neurofeedback task
                             current_TBV_tr = rt_load_BOLD(feedback_dir, feedback_file_name);
                             craving_blocks = craving_blocks + 1;
-%                         if p == find(strcmp(blockOrder, 'D'), 1) && block_num == 1
-%                             % Cue before downregulation task
-%                             cueText = 'Soon, you will see an \ninstruction to downregulate your craving on screen.';
-%                             [cue_start, cue_end, cue_dur, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = WriteInstruction(cueText, Cyan, cue_dur_TR, feedback_dir, feedback_file_name);
-%                             cue_timings = [cue_timings; cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1];
-%                             fprintf(fileID1,'%f  %f  %f  %f  %f  %f\n\n',[cue_start,cue_end,cue_dur,cue_start_TR,cue_end_TR,cue_end_TBV_TR-cue_start_TBV_TR+1]);
-%     
-%                             % Downregulation neurofeedback task
-%                             current_TBV_tr = rt_load_BOLD(feedback_dir, feedback_file_name);
-%                             craving_blocks = craving_blocks + 1;
-%     
-%                             % Downregulation CUE
-%                             Text = 'While you view images, \n try to decrease your craving for the cannabis.';
-%                             [cue_start, ~, ~, cue_start_TR, ~, cue_start_TBV_TR, ~] = WriteInstruction(Text, Cyan, cue_dur_TR, feedback_dir, feedback_file_name);
-%                             Text = 'Score bar will decrease with less craving.'; 
-%                             WriteInstruction(Text, Cyan, cue_dur_TR - 2, feedback_dir, feedback_file_name);
-%     
-%                             Text = 'Start:';
-%                             WriteInstruction(Text, Cyan, cue_dur_TR - 3, feedback_dir, feedback_file_name);
-%                             for countdown = 3:-1:1
-%                                 Text = num2str(countdown);
-%                                 if countdown > 1
-%                                     WriteInstruction(Text, Cyan, cue_dur_TR - 4, feedback_dir, feedback_file_name);
-%                                 else
-%                                     [~, cue_end, ~, ~, cue_end_TR, ~, cue_end_TBV_TR] = WriteInstruction(Text, Cyan, cue_dur_TR - 4, feedback_dir, feedback_file_name);
-%                                 end
-%                             end
-%     
-%                             cue_dur = cue_end - cue_start;
-%                             cue_timings = [cue_timings; cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1];
-%                             fprintf(fileID1, '%f  %f  %f  %f  %f  %f\n\n', [cue_start, cue_end, cue_dur, cue_start_TR, cue_end_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1]);
-%                             
-%                         else
-%                             % CUE before craving task
-%                             Text = 'Now try to downregulate your craving to cannabis...';
-%                             [cue_start, cue_end, ~, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = WriteInstruction(Text, Cyan, cue_dur_TR, feedback_dir, feedback_file_name);
-%                             cue_dur = cue_end - cue_start;
-%                             cue_timings = [cue_timings; cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1];
-%                             fprintf(fileID1, '%f  %f  %f  %f  %f  %f\n\n', [cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1]);
-%     
-%                             % Downregulation neurofeedback task
-%                             current_TBV_tr = rt_load_BOLD(feedback_dir, feedback_file_name);
-%                             craving_blocks = craving_blocks + 1;
-%                         end
 
                         % BLANK
                         BlankOut(1, feedback_dir, feedback_file_name);
@@ -568,34 +394,11 @@ try
                 case 'V'
                     if run_vas_block
                         
-%                         Text = sprintf(['RATE CRAVINGS']);
-%                         [cue_start, cue_end, cue_dur, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = WriteInstruction(Text, Cyan, cue_dur_TR, feedback_dir, feedback_file_name);
-%                             cue_timings = [cue_timings; cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1];
-%                             fprintf(fileID1, '%f  %f  %f  %f  %f  %f\n\n', [cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1]);
-                            
-%                         if p == find(strcmp(blockOrder, 'V'), 1) && block_num == 1
-%                             % VAS 
-%                             Text = sprintf(['Soon you will see a scale. \nPlease rate your current craving from 0 to 10: \n\n', ...
-%                                         '0 (No craving) <---> 10 (High craving) \n\n', ...
-%                                         'Use button box to rate your craving \n\n', ...
-%                                         'When finished, simply release the keys.']);
-%                             
-%                             [cue_start, cue_end, cue_dur, cue_start_TR, cue_end_TR, cue_start_TBV_TR, cue_end_TBV_TR] = WriteInstruction(Text, Cyan, cue_dur_TR + 10, feedback_dir, feedback_file_name);
-%                             cue_timings = [cue_timings; cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1];
-%                             fprintf(fileID1, '%f  %f  %f  %f  %f  %f\n\n', [cue_start, cue_end, cue_dur, cue_start_TBV_TR, cue_end_TBV_TR, cue_end_TBV_TR - cue_start_TBV_TR + 1]);
-%                             
-%                             
-%                         end
-    
-%                         % BLANK
-%                         BlankOut(1, feedback_dir, feedback_file_name);
+                BlankOut(1, feedback_dir, feedback_file_name);
     
                         % VAS Scale Instruction
                         instructionText = 'Please rate your current craving on the scale from 1 to 10';
-                        
-
-                        
-                        
+                                                
                         [block_start, block_end, block_dur, block_start_TR, block_end_TR, block_start_TBV_TR, block_end_TBV_TR] = VAS_scale(window, scr_rect, vasQuestions, feedback_dir, feedback_file_name, fileID7, p, num_blocks, block_num, blockOrder);
     
                         % Store Ratings
@@ -623,15 +426,15 @@ try
 
     %----------------------------------------------------------------------
     %% End of run
-    save([saveroot 'run_' num2str(run_no) '_rest_mean_values.mat'],'rest_blocks_mean');
     save([saveroot 'run_' num2str(run_no) '_TR_PSC_values.mat'],'ROI_PSC');
-    Total_run_duration = VAS_block_timings(end, 2); %secs
+    Total_run_duration = Fix_block_timings(end, 2); %secs
     fprintf(fileID1, '\nTotal MRI run duration (s): \t\t%.2f \n', Total_run_duration); 
     fprintf(fileID2, '\nTotal MRI run duration (s): \t\t%.2f \n', Total_run_duration); 
     fprintf(fileID3, '\nTotal MRI run duration (s): \t\t%.2f \n', Total_run_duration);
     fprintf(fileID4, '\nTotal MRI run duration (s): \t\t%.2f \n', Total_run_duration); 
     fprintf(fileID5, '\nTotal MRI run duration (s): \t\t%.2f \n', Total_run_duration);
     fprintf(fileID6, '\nTotal MRI run duration (s): \t\t%.2f \n', Total_run_duration);
+    fprintf(fileID7, '\nTotal MRI run duration (s): \t\t%.2f \n', Total_run_duration);
     save([saveroot 'run_' num2str(run_no) '_workspace.mat']);
 
 catch 
@@ -654,35 +457,33 @@ ShowCursor;
 
 %% FUNCTIONS
 
-function PrintGeneralInfo(ID,d,name,rn,nb,bl)
+function PrintGeneralInfo(ID,d,name,rn)
 % Writes general info for each participant session into text file
-%
+
 %ID - file ID
 %d - date
 %name - participant's name
 %rn - run number
-%nb - number of block sets 
-%bl - block length (in TR)
+
 fprintf(ID, '\n============================================================================\n');
 fprintf(ID, '\n______________________________General info:________________________________');
 fprintf(ID, '\nDate of experiment: \t%s', d);
 fprintf(ID, '\nParticipant Name: \t\t\t%s', name);
 fprintf(ID, '\nRun number: \t\t%d', rn);
-fprintf(ID, '\nNumber of Block sets per run: \t\t%d', nb);
-fprintf(ID, '\nBlock Length [TR]: \t\t%f', bl);
+
 end
 %%%%%%%%%%%%%%%%%%%%%%%
 function [co, ce, cdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_end_tbv_tr] = UpWriteInstruction(instruction, colour, num_trs, folder_path, file_prefix)
     % Writes instructions on the screen for a specified duration, adjusting font size to fit the window.
     % Global Variables
-    global window start_time current_TBV_tr TR windowHeight scr_rect centreX centreY %%windowheight added
+    global window start_time current_TBV_tr TR windowHeight scr_rect centreX centreY 
     % Outputs
     co = GetSecs() - start_time;           % Instruction onset time (in seconds)
     block_start_tr = round(co / TR) + 1;   % Instruction onset time (in TRs)
     block_start_tbv_tr = current_TBV_tr;   % Instruction onset TR from TheBrainVoyager
     
     % Text Properties
-    Screen('TextSize', window, round(windowHeight * 0.07));  % Dynamic font size (5% of window height)
+    Screen('TextSize', window, round(windowHeight * 0.07));  % Dynamic font size (7% of window height)
     Screen('TextFont', window, 'Arial');                    % Set font to Arial
     Screen('TextStyle', window, 0);                         % Normal text style
     
@@ -713,7 +514,7 @@ function [co, ce, cdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
     Screen('FillRect', window, arrowColor, arrowLineRect);
     
     % Triangle arrowhead coordinates
-    % Triangle arrowhead coordinates
+
     arrowHeadPoints = [ arrowBaseX - arrowHeadSize, arrowBaseY - arrowHeight + arrowHeadSize; ... % Left vertex
                         arrowBaseX, arrowBaseY - arrowHeight; ...                               % Tip
                         arrowBaseX + arrowHeadSize, arrowBaseY - arrowHeight + arrowHeadSize; ... % Right vertex
@@ -741,14 +542,14 @@ end
 function [co, ce, cdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_end_tbv_tr] = DownWriteInstruction(instruction, colour, num_trs, folder_path, file_prefix)
     % Writes instructions on the screen for a specified duration, adjusting font size to fit the window.
     % Global Variables
-    global window start_time current_TBV_tr TR windowHeight scr_rect centreX centreY %%windowheight added
+    global window start_time current_TBV_tr TR windowHeight scr_rect centreX centreY 
     % Outputs
     co = GetSecs() - start_time;           % Instruction onset time (in seconds)
     block_start_tr = round(co / TR) + 1;   % Instruction onset time (in TRs)
     block_start_tbv_tr = current_TBV_tr;   % Instruction onset TR from TheBrainVoyager
     
     % Text Properties
-    Screen('TextSize', window, round(windowHeight * 0.07));  % Dynamic font size (5% of window height)
+    Screen('TextSize', window, round(windowHeight * 0.07));  % Dynamic font size (7% of window height)
     Screen('TextFont', window, 'Arial');                    % Set font to Arial
     Screen('TextStyle', window, 0);                         % Normal text style
     
@@ -807,7 +608,7 @@ end
 function [co, ce, cdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_end_tbv_tr] = WriteInstruction(instruction, colour, num_trs, folder_path, file_prefix)
     % Writes instructions on the screen for a specified duration, adjusting font size to fit the window.
     % Global Variables
-    global window start_time current_TBV_tr TR windowHeight %%windowheight added
+    global window start_time current_TBV_tr TR windowHeight 
     % Outputs
     co = GetSecs() - start_time;           % Instruction onset time (in seconds)
     block_start_tr = round(co / TR) + 1;   % Instruction onset time (in TRs)
@@ -835,7 +636,35 @@ function [co, ce, cdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
     block_end_tr = round(ce / TR);            % Instruction end time (in TRs)
     block_end_tbv_tr = current_TBV_tr;         % Instruction end TR from TheBrainVoyager
 end
-
+%%%%%%%%%%%%%% WriteBaseInstruction function %%%%%%%%%%%%%%
+function [co, ce, cdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_end_tbv_tr] = WriteBaseInstruction(instruction, colour, num_trs, folder_path, file_prefix)
+    % Writes instructions on the screen for a specified duration, adjusting font size to fit the window.
+    % Global Variables
+    global window start_time current_TBV_tr TR windowHeight 
+    % Outputs
+    co = GetSecs() - start_time;           % Instruction onset time (in seconds)
+    block_start_tr = round(co / TR) + 1;   % Instruction onset time (in TRs)
+    block_start_tbv_tr = current_TBV_tr;   % Instruction onset TR from TheBrainVoyager
+    
+    % Text Properties
+    Screen('TextSize', window, round(windowHeight * 0.05));  % Dynamic font size (5% of window height)
+    Screen('TextFont', window, 'Arial');                    % Set font to Arial
+    Screen('TextStyle', window, 0);                         % Normal text style
+    
+    DrawFormattedText(window, instruction, 'center', 'center', colour); % Wrap and center text
+    Screen('Flip', window);
+    % Wait for Instruction Duration
+    elapsed = (GetSecs() - start_time) - co;
+    while elapsed < (num_trs * TR)
+        current_TBV_tr = rt_load_BOLD(folder_path, file_prefix);
+        ce = GetSecs() - start_time;                % Instruction end time (in seconds)
+        elapsed = ce - co;
+    end
+    % Outputs
+    cdur = elapsed;                            % Instruction duration (in seconds)
+    block_end_tr = round(ce / TR);            % Instruction end time (in TRs)
+    block_end_tbv_tr = current_TBV_tr;         % Instruction end TR from TheBrainVoyager
+end
 %%%%%%%%%%%%%%%%%%%%%%
 function BlankOut(num_trs,folder_path,file_prefix)
 % Shows a blank screen for a specified duration
@@ -893,7 +722,7 @@ end
 
 %%%%%%%%%%% Modified Upregulation_feedback function %%%%%%%%%%%
 function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_end_tbv_tr, image_onsets, image_durations, image_offsets, cravingImageNumbers, selectedImageIndices,allSelectedImages] = Upregulation_feedback(num_trs, folder_path, file_prefix, imageTextures, p, selectedImageIndices, allSelectedImages, block_num, blockOrder)  
-    global window start_time current_TBV_tr TR windowHeight FB_timings
+    global window start_time current_TBV_tr TR windowHeight FB_timings run_no Main_dir
 
     bo = GetSecs() - start_time;
     block_start_tr = round(bo / TR) + 1;
@@ -904,31 +733,43 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
     imageDurationSecs = 15; %change for different cue/timing
 
     % Get a list of all image files in the image directory
-    imageDir = fullfile('C:\Users\NFB-user\Documents\NFB\Cue-reactivity latest\3-Current_MR_CRtask_v1_after2ndScan\Current_MR_CRtask_v1\MR_CRtask_v1\TRIGGER_B_Media');
+    if run_no == 1
+          imageDir = fullfile(Main_dir, 'NFB_TASK_IMAGES', 'Run_1');
+    elseif run_no == 2
+          imageDir = fullfile(Main_dir, 'NFB_TASK_IMAGES', 'Run_2');
+    elseif run_no == 3
+          imageDir = fullfile(Main_dir, 'NFB_TASK_IMAGES', 'Run_3');
+    elseif run_no == 4
+          imageDir = fullfile(Main_dir, 'NFB_TASK_IMAGES', 'Run_4');
+    end
+   
+        
     imageFiles = dir(fullfile(imageDir, 'C*.png')); 
+    [~, sortIdx] = sort_nat({imageFiles.name});
+    imageFiles = imageFiles(sortIdx);
     numImages = length(imageFiles);
     
     
-    % Randomly select 5 unique images for this block, ensuring no repetition within a block_num and between up/downregulation blocks
+    % Randomly select 2 unique images for this block, ensuring no repetition within a block_num and between up/downregulation blocks
     allImageIndices = 1:numImages; 
     if isempty(selectedImageIndices) 
-        selectedImageIndices = randperm(numImages, 2);%change for different cue/timing 
+        selectedImageIndices = 1:2;%change for different cue/timing 
     else
         remainingImageIndices = setdiff(allImageIndices, allSelectedImages); 
         if numel(remainingImageIndices) < 2 %change for different cue/timing
             warning('Not enough unique images left for this block_num. Reusing some images.');
             remainingImageIndices = allImageIndices; 
         end
-        selectedImageIndices = remainingImageIndices(randperm(numel(remainingImageIndices), 2));%change for different cue/timing
+        selectedImageIndices = remainingImageIndices(1:2);%change for different cue/timing
     end
 
     allSelectedImages = [allSelectedImages, selectedImageIndices];
 
    
 
-    disp('Selected image indices for upregulation block:');
-    disp(allSelectedImages);
-    disp(selectedImageIndices);
+%     disp('Selected image indices for upregulation block:');
+%     disp(allSelectedImages);
+%     disp(selectedImageIndices);
 
     % Load the selected images dynamically
     imageTextures = [];
@@ -950,20 +791,8 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
                 temp = current_TBV_tr;
             end
 
-            if isempty(FB_timings) || floor(GetSecs() - start_time) > floor(FB_timings{end, 1})
-                if block_num == 1 && strcmp(blockOrder{p}, 'PR')  % Check for practice block
-                    FB_timings{end + 1, 1} = GetSecs() - start_time; 
-                    FB_timings{end, 2} = score; 
-                    FB_timings{end, 3} = current_TBV_tr; 
-                    FB_timings{end, 4} = "Up"; 
-                    FB_timings{end, 5} = "Practice"; % Add "Practice" to the 5th column
-                else
-                    FB_timings{end + 1, 1} = GetSecs() - start_time; 
-                    FB_timings{end, 2} = score; 
-                    FB_timings{end, 3} = current_TBV_tr; 
-                    FB_timings{end, 4} = "Up"; 
-                    FB_timings{end, 5} = "Experiment"; % Add "Experiment" to the 5th column 
-                end
+            if isempty(FB_timings) || floor(GetSecs() - start_time) > floor(FB_timings(end, 1))
+                FB_timings(end + 1, :) = [GetSecs() - start_time, score, current_TBV_tr]; 
             end
                 
             [windowWidth, windowHeight] = Screen('WindowSize', window);
@@ -997,7 +826,7 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
 end
 %%%%%%%%%%% Downregulation_feedback function %%%%%%%%%%%
 function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_end_tbv_tr, image_onsets, image_durations, image_offsets, cravingImageNumbers, selectedImageIndices,allSelectedImages] = Downregulation_feedback(num_trs, folder_path, file_prefix, imageTextures, p, selectedImageIndices, allSelectedImages, block_num, blockOrder)  
-    global window start_time current_TBV_tr TR windowHeight FB_timings 
+    global window start_time current_TBV_tr TR windowHeight FB_timings run_no Main_dir
 
     bo = GetSecs() - start_time;
     block_start_tr = round(bo / TR) + 1;
@@ -1008,29 +837,40 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
     imageDurationSecs = 15;%change for different cue/timing 
 
     % Get a list of all image files in the image directory
-    imageDir = fullfile('C:\Users\NFB-user\Documents\NFB\Cue-reactivity latest\3-Current_MR_CRtask_v1_after2ndScan\Current_MR_CRtask_v1\MR_CRtask_v1\TRIGGER_B_Media');
+    if run_no == 1
+          imageDir = fullfile(Main_dir, 'NFB_TASK_IMAGES', 'Run_1');
+    elseif run_no == 2
+          imageDir = fullfile(Main_dir, 'NFB_TASK_IMAGES', 'Run_2');
+    elseif run_no == 3
+          imageDir = fullfile(Main_dir, 'NFB_TASK_IMAGES', 'Run_3');
+    elseif run_no == 4
+          imageDir = fullfile(Main_dir, 'NFB_TASK_IMAGES', 'Run_4');
+    end
+
     imageFiles = dir(fullfile(imageDir, 'C*.png')); 
+    [~, sortIdx] = sort_nat({imageFiles.name});
+    imageFiles = imageFiles(sortIdx);
     numImages = length(imageFiles);
     
   
-    % Randomly select 5 unique images for this block, ensuring no repetition within a block_num and between up/downregulation blocks
+    % Randomly select 2 unique images for this block, ensuring no repetition within a block_num and between up/downregulation blocks
     allImageIndices = 1:numImages; 
     if isempty(selectedImageIndices) 
-        selectedImageIndices = randperm(numImages, 2); %change for different cue/timing
+        selectedImageIndices = 1:2; %change for different cue/timing
     else
         remainingImageIndices = setdiff(allImageIndices, allSelectedImages); 
         if numel(remainingImageIndices) < 2 %change for different cue/timing
             warning('Not enough unique images left for this block_num. Reusing some images.');
             remainingImageIndices = allImageIndices; 
         end
-        selectedImageIndices = remainingImageIndices(randperm(numel(remainingImageIndices), 2)); %change for different cue/timing
+        selectedImageIndices = remainingImageIndices(1:2); %change for different cue/timing
     end
 
     allSelectedImages = [allSelectedImages, selectedImageIndices]; 
 
-    disp('Selected image indices for Downregulation block:');
-    disp(allSelectedImages);
-    disp(selectedImageIndices);
+%     disp('Selected image indices for Downregulation block:');
+%     disp(allSelectedImages);
+%     disp(selectedImageIndices);
 
     % Load the selected images dynamically
     imageTextures = [];
@@ -1052,20 +892,8 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
                 temp = current_TBV_tr;
             end
             
-            if isempty(FB_timings) || floor(GetSecs() - start_time) > floor(FB_timings{end, 1})
-                if block_num == 1 && strcmp(blockOrder{p}, 'PR')  % Check for practice block
-                    FB_timings{end + 1, 1} = GetSecs() - start_time; 
-                    FB_timings{end, 2} = score; 
-                    FB_timings{end, 3} = current_TBV_tr; 
-                    FB_timings{end, 4} = "Down"; 
-                    FB_timings{end, 5} = "Practice"; % Add "Practice" to the 5th column
-                else
-                    FB_timings{end + 1, 1} = GetSecs() - start_time; 
-                    FB_timings{end, 2} = score; 
-                    FB_timings{end, 3} = current_TBV_tr; 
-                    FB_timings{end, 4} = "Down"; 
-                    FB_timings{end, 5} = "Experiment"; % Add "Experiment" to the 5th column 
-                end
+            if isempty(FB_timings) || floor(GetSecs() - start_time) > floor(FB_timings(end, 1))
+                FB_timings(end + 1, :) = [GetSecs() - start_time, score, current_TBV_tr]; 
             end
 
             [windowWidth, windowHeight] = Screen('WindowSize', window);
@@ -1114,78 +942,78 @@ function [bo, be, bdur, block_start_tr, block_end_tr, block_start_tbv_tr, block_
     numNeutralImages = length(neutralImageFiles);
     
     cravingImageNumbers = cravingImageNumbers;
+    % Define dstRect at the beginning of the function
+     [windowWidth, windowHeight] = Screen('WindowSize', window);
+     newImageWidth = windowWidth * 0.6;
+     newImageHeight = windowHeight * 0.72;
+     dstRect = CenterRect([0, 0, newImageWidth, newImageHeight], [0, 0, windowWidth, windowHeight]);
     
-    % Logic to select images based on block order
-    if isempty(cravingImageNumbers)  % If cravingImageNumbers is empty (neutral block first)
-        % Select 1 random neutral images, ensuring no repetition within a block_num
-        allNeutralImageIndices = 1:numNeutralImages;
-        if isempty(selectedNeutralImageIndices)
-            selectedNeutralImageIndices = find(strcmp({neutralImageFiles.name}, 'N2001.png')); %change for different Baseline cue/timing
-            imageDurationSecs = 70; %change for different Baseline cue/timing
-        else
-            remainingNeutralImageIndices = setdiff(allNeutralImageIndices, selectedNeutralImageIndices);
-            selectedNeutralImageIndices = remainingNeutralImageIndices(randperm(numel(remainingNeutralImageIndices), 2)); %change for different cue/timing
-            imageDurationSecs = 15; %change for different cue/timing
-        end
-        % Store the numbers from the selected neutral image file names 
-        neutralImageNumbers = [];
-        for k = 1:numel(selectedNeutralImageIndices)
-            [~, imageName, ~] = fileparts(neutralImageFiles(selectedNeutralImageIndices(k)).name);
-            neutralImageNumbers(k) = str2double(imageName(2:end));
-        end
-        selectedImageIndices = selectedNeutralImageIndices; 
+        % Logic to select images based on block order
+     if isempty(cravingImageNumbers)  % If cravingImageNumbers is empty (neutral block first)
+         % Select specific neutral images and display them sequentially
+         imageDurationSecs = 14; % Duration for each image
+         neutralImageNames = {};
+         if run_no == 1
+             neutralImageNames = {'N101.png', 'N102.png', 'N103.png', 'N104.png', 'N105.png'};
+         elseif run_no == 2
+             neutralImageNames = {'N201.png', 'N202.png', 'N203.png', 'N204.png', 'N205.png'};
+         elseif run_no == 3
+             neutralImageNames = {'N301.png', 'N302.png', 'N303.png', 'N304.png', 'N305.png'};
+         elseif run_no == 4
+             neutralImageNames = {'N401.png', 'N402.png', 'N403.png', 'N404.png', 'N405.png'};
+         end
+         imageTextures = []; % Initialize imageTextures here for this case
+         for k = 1:length(neutralImageNames)
+             imagePath = fullfile(imageDir, neutralImageNames{k});
+             if exist(imagePath, 'file')
+                 img = imread(imagePath);
+                 imageTextures(k) = Screen('MakeTexture', window, img);
+                 Screen('DrawTexture', window, imageTextures(k), [], dstRect);
+                 Screen('Flip', window);
+                 WaitSecs(imageDurationSecs);
+                 Screen('Flip', window); % Clear the screen after the pause
+             end
+         end
+         selectedImageIndices = 1:length(neutralImageNames); % Store indices of displayed images
+     else  % If cravingImageNumbers is not empty (craving block first)
+         selectedImageIndices = [];
+         imageDurationSecs = 5; %change for different cue/timing
+         for k = 1:numel(cravingImageNumbers)
+             for j = 1:numNeutralImages
+                 [~, imageName, ~] = fileparts(neutralImageFiles(j).name);
+                 if str2double(imageName(2:end)) == cravingImageNumbers(k)
+                     selectedImageIndices(k) = j;
+                     break;
+                 end
+             end
+             if isempty(selectedImageIndices(k))
+                 warning('Corresponding neutral image not found for craving image number %d', cravingImageNumbers(k));
+             end
+         end
+         % Load the selected neutral images dynamically
+         imageTextures = [];
+         for k = 1:numel(selectedImageIndices)
+             imagePath = fullfile(imageDir, neutralImageFiles(selectedImageIndices(k)).name);
+             img = imread(imagePath);
+             imageTextures(k) = Screen('MakeTexture', window, img);
+         end
 
-    else  % If cravingImageNumbers is not empty (craving block first)
-        selectedImageIndices = [];
-        imageDurationSecs = 15; %change for different cue/timing
-        for k = 1:numel(cravingImageNumbers)
-            for j = 1:numNeutralImages
-                [~, imageName, ~] = fileparts(neutralImageFiles(j).name);
-                if str2double(imageName(2:end)) == cravingImageNumbers(k)
-                    selectedImageIndices(k) = j;
-                    break;
-                end
-            end
-            if isempty(selectedImageIndices(k))
-                warning('Corresponding neutral image not found for craving image number %d', cravingImageNumbers(k));
-            end
-        end
-    end
-
-    % Load the selected neutral images dynamically
-    imageTextures = [];
-    for k = 1:numel(selectedImageIndices)
-        imagePath = fullfile(imageDir, neutralImageFiles(selectedImageIndices(k)).name);
-        img = imread(imagePath);
-        imageTextures(k) = Screen('MakeTexture', window, img);
-    end
-    
-
-    % Task loop 
-    for imageIndex = 1:numel(imageTextures)
-        imageStartTime = GetSecs();
-        while GetSecs() - imageStartTime < imageDurationSecs
-            current_TBV_tr = rt_load_BOLD(folder_path, file_prefix);
-            [windowWidth, windowHeight] = Screen('WindowSize', window);
-            newImageWidth = windowWidth * 0.6;
-            newImageHeight = windowHeight * 0.72;
-
-            dstRect = CenterRect([0, 0, newImageWidth, newImageHeight], [0, 0, windowWidth, windowHeight]);
-
-            % Draw the image texture
-            Screen('DrawTexture', window, imageTextures(imageIndex), [], dstRect);
-            
-            % Calculate the x-coordinate for the center of the image
-%             offsetX = windowWidth * 0.1;  % Adjust this value to move the image left or right
-%             centerX = windowWidth / 2 - offsetX; 
-%             dstRect = CenterRectOnPoint([0 0 newImageWidth newImageHeight], centerX, windowHeight / 2);
-
-%             DrawFeedbackImage(imageTextures, imageIndex, dstRect);
-%             DrawNeutralFeedback();
-              Screen('Flip', window);
-        end
-        
-    end
+         % Task loop for when cravingImageNumbers is NOT empty
+         for imageIndex = 1:numel(imageTextures)
+             imageStartTime = GetSecs();
+             while GetSecs() - imageStartTime < imageDurationSecs
+                 current_TBV_tr = rt_load_BOLD(folder_path, file_prefix);
+                 [windowWidth, windowHeight] = Screen('WindowSize', window);
+                 newImageWidth = windowWidth * 0.6;
+                 newImageHeight = windowHeight * 0.72;
+                 dstRect = CenterRect([0, 0, newImageWidth, newImageHeight], [0, 0, windowWidth, windowHeight]);
+                 % Draw the image texture
+                 Screen('DrawTexture', window, imageTextures(imageIndex), [], dstRect);
+                 % DrawNeutralFeedback();
+                   Screen('Flip', window);
+             end
+         end
+     end
     be = GetSecs() - start_time;
     bdur = be - bo;
     block_end_tr = round(be / TR);
@@ -1217,14 +1045,6 @@ function DrawNeutralFeedback()
     % Drawing frames for all 40 rectangles
     Screen('FrameRect', window, 255, all_rect_coords, ones(20, 1) * 1.5);
     
-    % Center line position (between rectangles 20 and 21)
-% %     centre_line_pos = [centreX + barOffsetX - (0.75 * rect_size(3)), centreX + barOffsetX + (0.75 * rect_size(3)); 
-%                        centreY + barOffsetY + ((rect_start_pos + 20) * y_size) + (0.5 * rect_size(4)), ...
-%                        centreY + barOffsetY + ((rect_start_pos + 20) * y_size) + (0.5 * rect_size(4))];
-%    
-    % Drawing the center line on the feedback frame
-%     Screen('DrawLines', window, centre_line_pos, 2, 200);
-
        
     % Writing text on screen
     Screen('TextSize', window, round(windowHeight * 0.03));
@@ -1275,8 +1095,6 @@ function rect_num = DrawFeedback(score)
         all_rect_coords(:,i) = rect_coords';
     end
     
-    % Fill the first 20 rectangles with Cyan (pink) initially
-%     Screen('FillRect', window, repmat(rect_color_black', [1, 20]), all_rect_coords(:, 1:20));
 
     % Fill rectangles 21 to 40 based on the score
     if score > 0
@@ -1285,11 +1103,6 @@ function rect_num = DrawFeedback(score)
     end
 
     
-    % Center line (adjusted for 40 rectangles, centered between rectangle 20 and 21)
-%     centre_line_pos = [centreX + barOffsetX - (0.75*rect_size(3)), centreX + barOffsetX + (0.75*rect_size(3)); 
-%                        centreY + barOffsetY - ((rect_start_pos+19)*y_size)-(0.5*rect_size(4)), ...
-%                        centreY + barOffsetY - ((rect_start_pos+19)*y_size)-(0.5*rect_size(4))];
-%     
 %     % Drawing frames for all 40 rectangles
     Screen('FrameRect', window, 255, all_rect_coords, ones(20,1)*1.5);
     
@@ -1375,10 +1188,6 @@ function rect_num = DrawFeedbackDownregulation(score)
     end
     
     
-    
-    % Fill rectangles 21-40 with black
-%     Screen('FillRect', window, rect_color_black', all_rect_coords(:, 21:40));
-    
     % Fill the first 20 rectangles (1-20) with white initially
      Screen('FillRect', window, rect_color_white', all_rect_coords(:, 1:20));
     
@@ -1387,13 +1196,7 @@ function rect_num = DrawFeedbackDownregulation(score)
         Screen('FillRect', window, repmat(rect_color_black', [1, score]), all_rect_coords(:, (20 - score+1):20));
     end
 
- 
-    
-    % Center line position (between rectangles 20 and 21)
-%     centre_line_pos = [centreX + barOffsetX - (0.75 * rect_size(3)), centreX + barOffsetX + (0.75 * rect_size(3)); 
-%                        centreY + barOffsetY + ((rect_start_pos + 20) * y_size) + (0.5 * rect_size(4)), ...
-%                        centreY + barOffsetY + ((rect_start_pos + 20) * y_size) + (0.5 * rect_size(4))];
-%     
+
     % Drawing frames for all 40 rectangles
     Screen('FrameRect', window, 255, all_rect_coords, ones(20, 1) * 1.5);
     
@@ -1482,7 +1285,7 @@ if (curr_tbv_tr>prev_tbv_tr) && (curr_tbv_tr>0) && (curr_tr>0)
         conf = temp1(1,3); %confound signal PSC
         source_flag = 0;
         % Print the loaded data
-            fprintf('Loaded data: temp2 = %f, temp3 = %f, conf = %f\n', temp2, temp3, conf);
+           % fprintf('Loaded data: temp2 = %f, temp3 = %f, conf = %f\n', temp2, temp3, conf);
         
     catch %storing previous values (based on TBV output updates) due to error in accessing most recent output file
         port_issue = [port_issue;curr_tbv_tr,curr_tr];
@@ -1509,11 +1312,11 @@ if (curr_tbv_tr>prev_tbv_tr) && (curr_tbv_tr>0) && (curr_tr>0)
     end
     elapsed = toc;
     % Print the final ROI_vals entry
-        fprintf('ROI_vals entry: ');
-        disp( [temp2, conf, curr_tbv_tr, curr_time, temp3, elapsed, curr_tr, source_flag] );
+        %fprintf('ROI_vals entry: ');
+       % disp( [temp2, conf, curr_tbv_tr, curr_time, temp3, elapsed, curr_tr, source_flag] );
         % Print values after updating ROI_vals
-        fprintf('After processing: curr_tbv_tr = %d, prev_tbv_tr = %d, size(ROI_vals, 1) = %d\n', ...
-            curr_tbv_tr, prev_tbv_tr, size(ROI_vals, 1));
+        %fprintf('After processing: curr_tbv_tr = %d, prev_tbv_tr = %d, size(ROI_vals, 1) = %d\n', ...
+           % curr_tbv_tr, prev_tbv_tr, size(ROI_vals, 1));
     %Main matrix containing PSC and other values
     ROI_vals(curr_tbv_tr,:) = [temp2,conf,curr_tbv_tr,curr_time,temp3,elapsed,curr_tr,source_flag];
     
@@ -1523,22 +1326,46 @@ end
 %%%%%%%%%%%
 function curr_feedback = calculate_feedback()
 % Calculates and returns the feedback value
-%INPUTS
-%medtrial_start - onset of meditation trial (in MRI TR)
 %OUTPUTS
 %curr_feedback - feedback value (between 0.1 and 1) for the current TR
-global ROI_PSC PSC_thresh ROI_vals current_TBV_tr temp2 conf 
+global ROI_PSC PSC_thresh ROI_vals current_TBV_tr temp2 conf current_psc_history resid_BOLD_history feedback_mode
+
+%considering the initial lag
 baseline_lag_dur = 19; % all calculations to start after these many TRs at the beginning of run
+
 %ALL BOLD PSC values from dynamic ROI
 all_vals = ROI_vals(baseline_lag_dur:end,1); %Taking all the BOLD values so far, for cumulative GLM
-%considering the initial lag
+
+
 %All confound PSC from confound ROI mask
 all_conf_vals = ROI_vals(baseline_lag_dur:end,2); %Taking all the confound mask values so far, for cumulative GLM
 %Cumulative GLM - Regressing out detrended and demeaned confound from ROI so far
 [beta,~,stats] = glmfit(all_conf_vals-mean(all_conf_vals),all_vals);
 resid_BOLD = stats.resid + beta(1);
+
 current_psc = resid_BOLD(end);
+resid_BOLD_history = [resid_BOLD_history; resid_BOLD(end)];
+current_psc_history = [current_psc_history; resid_BOLD(end)];
+
+if feedback_mode == 1 % Raw BOLD
+    current_psc = resid_BOLD(end);
+elseif feedback_mode == 2 % Weighted Feedback
+    if length(current_psc_history) >= 4
+        current_psc = 0.5 * current_psc_history(end) + ...
+                      0.25 * current_psc_history(end - 1) + ...
+                      0.125 * (current_psc_history(end - 2) + current_psc_history(end - 3));
+    elseif length(current_psc_history) == 3
+        current_psc = (1/2) * current_psc_history(end) + (1/3) * current_psc_history(end-1) + (1/6) * current_psc_history(end -2);
+    elseif length(current_psc_history) == 2
+        current_psc = (2/3) * current_psc_history(end) + (1/3) * current_psc_history(end-1);
+    else
+        current_psc = resid_BOLD(end);
+    end
+end
+current_psc_history(end) = current_psc;
+
 current_conf = all_conf_vals(end);
+
 %Feedback value:
 %Higher negative feedback value implies greater deactivation
 %Converting negative feedback value to positive feedback value in the
@@ -1555,15 +1382,18 @@ if curr_feedback<0.01
 elseif curr_feedback>1
     curr_feedback=1;
 end
+
+
 % Print the score for upregulation
-fprintf('Upregulation score: %.2f\n', curr_feedback); 
+% fprintf('Upregulation score: %.2f\n', curr_feedback); 
 end
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 function curr_feedback = calculate_feedback_downregulation()
 % Calculates and returns the feedback value for downregulation
-global ROI_PSC ROI_vals current_TBV_tr temp2 conf 
+global ROI_PSC ROI_vals current_TBV_tr temp2 conf current_psc_history resid_BOLD_history feedback_mode
 
-baseline_lag_dur = 12; % all calculations to start after these many TRs at the beginning of run
+%considering the initial lag
+baseline_lag_dur = 19; % all calculations to start after these many TRs at the beginning of run
 
 % ALL BOLD PSC values from dynamic ROI
 all_vals = ROI_vals(baseline_lag_dur:end,1); 
@@ -1574,7 +1404,27 @@ all_conf_vals = ROI_vals(baseline_lag_dur:end,2);
 % Cumulative GLM - Regressing out detrended and demeaned confound from ROI so far
 [beta,~,stats] = glmfit(all_conf_vals-mean(all_conf_vals),all_vals);
 resid_BOLD = stats.resid + beta(1);
+
 current_psc = resid_BOLD(end);
+resid_BOLD_history = [resid_BOLD_history; resid_BOLD(end)];
+current_psc_history = [current_psc_history; resid_BOLD(end)];
+
+if feedback_mode == 1 % Raw BOLD
+    current_psc = resid_BOLD(end);
+elseif feedback_mode == 2 % Weighted Feedback
+    if length(current_psc_history) >= 4
+        current_psc = 0.5 * current_psc_history(end) + ...
+                      0.25 * current_psc_history(end - 1) + ...
+                      0.125 * (current_psc_history(end - 2) + current_psc_history(end - 3));
+    elseif length(current_psc_history) == 3
+        current_psc = (1/2) * current_psc_history(end) + (1/3) * current_psc_history(end-1) + (1/6) * current_psc_history(end -2);
+    elseif length(current_psc_history) == 2
+        current_psc = (2/3) * current_psc_history(end) + (1/3) * current_psc_history(end-1);
+    else
+        current_psc = resid_BOLD(end);
+    end
+end
+current_psc_history(end) = current_psc;
 current_conf = all_conf_vals(end);
 
 % Set PSC threshold for downregulation
@@ -1593,52 +1443,185 @@ if curr_feedback < 0.01
 elseif curr_feedback > 1
     curr_feedback = 1;
 end
+
+
 % Print the score for upregulation
-fprintf('Downregulation score: %.2f\n', curr_feedback); 
+% fprintf('Downregulation score: %.2f\n', curr_feedback); 
 end
 %%%%%%%%%%%%%%%%%%%%%%VAS Function%%%%%%%%%%%%%%
 function [block_start, block_end, block_dur, block_start_TR, block_end_TR, block_start_TBV_TR, block_end_TBV_TR, ratings] = VAS_scale(window, scr_rect, instructionTexts, feedback_dir, feedback_file_name, fileID7, p, num_blocks, block_num, blockOrder) 
-    global start_time current_TBV_tr TR; 
+    global start_time current_TBV_tr TR nextKey centreX centreY scr_rect window; 
 
-    % Parameters (removed scale-related parameters)
+
+        % Parameters
+    scaleMin = 1;
+    scaleMax = 10;
+    scaleStep = 1;
+    scaleDuration = 10; % Duration in seconds before the scale closes automatically
+    markerColor = [255, 0, 0]; % Red marker
+    markerWidth = 20;
+    scaleColor = [255, 255, 255]; % Scale color is white
     textColor = [255, 255, 255]; % Text color is white
-    textSize = scr_rect(4) * 0.05; % Text size 
-
+    textSize = scr_rect(4) * 0.03; % Text size as 5% of the screen height
+    smallTextSize = textSize; % Smaller text size for numbers and labels
     block_start = GetSecs() - start_time;
     block_start_TR = round(block_start / TR) + 1;
     block_start_TBV_TR = current_TBV_tr;
+    [centrex,centrey] = RectCenter(scr_rect);
 
+    
+
+    % Scale parameters
+    scaleLength = scr_rect(3) * 0.5; 
+    scaleHeight = scr_rect(4) * 0.03; 
+    scaleX = (scr_rect(3) - scaleLength) / 2; 
+    scaleY = scr_rect(4) * 0.6; 
+
+    % Calculate label positions
+    labelOffsetX = scr_rect(3) * 0.1; 
+    labelOffsetY = -12; 
+    label1X = scaleX - labelOffsetX - 2;
+    label1Y = scaleY - labelOffsetY;
+    label2X = scaleX + scaleLength + 24;
+    label2Y = scaleY - labelOffsetY;
+
+    % Define the labels for each question
+    vasLabels = {
+        {'Not at all', 'Extremely'}, 
+        {'Not at all', 'Extremely'}, 
+        {'Not at all', 'Extremely'}
+    }; 
     % Initialize ratings array
-    rating = 5;
     ratings = zeros(1, 3); 
 
-    % Loop through the three questions
+%     % Draw the scale
+%     Screen('FillRect', window, scaleColor, [scaleX, scaleY, scaleX + scaleLength, scaleY + scaleHeight]);
+%     for i = 0:10
+%         DrawFormattedText(window, num2str(i), scaleX + (i / 10) * scaleLength - 10, scaleY + scaleHeight + scr_rect(4) * 0.06, textColor);
+%     end
+
+     % Loop through the three questions
     for questionNum = 1:3
         % Display the current question
         instructionText = instructionTexts{questionNum};
+        currentLabels = vasLabels{questionNum};  % Get labels for this question
 
-        % Display the instruction text
-        Screen('TextSize', window, textSize);
-        DrawFormattedText(window, instructionText, 'center', 'center', [0 255 255]);
+
+        % Initial rating position
+       % Initial rating position (corrected calculation)
+        rating = 5; 
+        ratingPosition = scaleX + ((rating - scaleMin) / (scaleMax - scaleMin)) * scaleLength;
+        ratingPosition = round((ratingPosition - scaleX) / (scaleLength / (scaleMax - scaleMin))) * (scaleLength / (scaleMax - scaleMin)) + scaleX;
+
+        % Display the VAS scale and capture user responses
+        VASstartTime = GetSecs();
+      
+
+        % Draw the instruction text
+        % Set the text size ONCE before drawing anything
+        Screen('TextSize', window, round(scr_rect(4) * 0.05));
+        DrawFormattedText(window, instructionText, 'center', scr_rect(4) * 0.3, [0 255 255]);
+        
+        Screen('FillRect', window, scaleColor, [scaleX, scaleY, scaleX + scaleLength, scaleY + scaleHeight]);
+    
+        % Draw the rating marker
+        Screen('FillRect', window, markerColor, [ratingPosition - markerWidth/2, scaleY - scaleHeight/2, ratingPosition + markerWidth/2, scaleY + scaleHeight * 1.5]);
+        % Draw the numbers and labels again
+        Screen('TextSize', window, round(scr_rect(4) * 0.035));
+        for i = 1:10
+            DrawFormattedText(window, num2str(i), scaleX + ((i-1) / (scaleMax-scaleMin)) * scaleLength - 10, scaleY + scaleHeight + scr_rect(4) * 0.06, textColor);
+        end
+        % Draw the labels for the current question
+        DrawFormattedText(window, currentLabels{1}, label1X, label1Y, textColor); 
+        DrawFormattedText(window, currentLabels{2}, label2X, label2Y, textColor);
+
+%         DrawFormattedText(window, 'No Craving', label1X, label1Y, textColor);
+%         DrawFormattedText(window, 'High Craving', label2X, label2Y, textColor);
+%     
+        % Flip the screen
         Screen('Flip', window);
+        
+    
 
-        % Wait for Return key press
-        while true
+        while GetSecs() - VASstartTime < scaleDuration
             % Check for key presses (same as before)
             [keyIsDown, ~, keyCode] = KbCheck;
-            if keyIsDown     
-                 keyCode(KbName('Return')) 
-                    break;
+            if keyIsDown
+                if keyCode(1, KbName('c'))
+                    rating = max(rating - scaleStep, scaleMin);
+                elseif keyCode(1, KbName('d'))
+                    rating = min(rating + scaleStep, scaleMax);
+                end
+
+                % Update rating position (corrected calculation)
+                ratingPosition = scaleX + ((rating - scaleMin) / (scaleMax - scaleMin)) * scaleLength;
+                ratingPosition = round((ratingPosition - scaleX) / (scaleLength / (scaleMax - scaleMin))) * (scaleLength / (scaleMax - scaleMin)) + scaleX;
+
+                % Draw the scale and marker (same as before)
+                Screen('TextSize', window, round(scr_rect(4) * 0.05));
+                DrawFormattedText(window, instructionText, 'center', scr_rect(4) * 0.3, [0 255 255]);
+
+                Screen('FillRect', window, scaleColor, [scaleX, scaleY, scaleX + scaleLength, scaleY + scaleHeight]);
+                Screen('FillRect', window, markerColor, [ratingPosition - markerWidth/2, scaleY - scaleHeight/2, ratingPosition + markerWidth/2, scaleY + scaleHeight * 1.5]);
+
+                % Draw the numbers and labels again
+                Screen('TextSize', window, round(scr_rect(4) * 0.035));
+                for i = 1:10
+                    DrawFormattedText(window, num2str(i), scaleX + ((i-1) / (scaleMax-scaleMin)) * scaleLength - 10, scaleY + scaleHeight + scr_rect(4) * 0.06, textColor);
+                end
+
+                DrawFormattedText(window, currentLabels{1}, label1X, label1Y, textColor); 
+                DrawFormattedText(window, currentLabels{2}, label2X, label2Y, textColor); 
+
+%                 DrawFormattedText(window, 'No Craving', label1X, label1Y, textColor);
+%                 DrawFormattedText(window, 'High Craving', label2X, label2Y, textColor);
+
+                % Flip the screen
+                WaitSecs(0.1);
+                Screen('Flip', window);
             end
         end
-        WaitSecs(0.1);
-        % Store a default rating (since no scale is used)
-        ratings(questionNum) = -1;  % Or any other value you deem appropriate
 
-       
+        % Store the rating for this question
+        ratings(questionNum) =  str2double(sprintf('%.0f', rating)); 
+
+        % Optionally add a short delay between questions
+        WaitSecs(0.5); 
     end
      
+    % Draw fixation cross directly
+    crossColor = [128 128 128]; % Grey
+    lineWidth = scr_rect(4)/20; % Thickness
+    lineLength = scr_rect(3)/4; % Length of cross arms
 
+    [centerX, centerY] = RectCenter(scr_rect);
+
+    % Horizontal line
+    x1_h = centerX - lineLength/2;
+    x2_h = centerX + lineLength/2;
+    y_h = [centerY - lineWidth/2, centerY + lineWidth/2];
+
+    % Vertical line
+    y1_v = centerY - lineLength/2;
+    y2_v = centerY + lineLength/2;
+    x_v = [centerX - lineWidth/2, centerX + lineWidth/2];
+
+    Screen('FillRect', window, crossColor, [x1_h y_h(1) x2_h y_h(2)]);
+    Screen('FillRect', window, crossColor, [x_v(1) y1_v x_v(2) y2_v]);
+    Screen('Flip', window);
+
+    % Wait for 'E' key press
+     while true
+        [keyIsDown, secs, keyCode] = KbCheck;
+        if keyIsDown
+            if keyCode(1, KbName('e'))
+                while KbCheck
+                    WaitSecs(0.01);
+                end
+                break; % Exit the loop when 'E' is pressed
+            end
+        end
+    end
 
     % Get the ending time of the block
     block_end = GetSecs() - start_time;
@@ -1650,6 +1633,14 @@ function [block_start, block_end, block_dur, block_start_TR, block_end_TR, block
     
     % Write the ratings to the file
     for i = 1:3
-        fprintf(fileID7, '%d        %.2f        %d\n', p, block_end, ratings(i));
+        fprintf(fileID7, '%d            %d\n', p, ratings(i));%p represents the pre(1) or post(2) VAS
     end
+end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function [sortedStrings, sortIndex] = sort_nat(strings)
+    % Natural-order sort of filenames like C1.png, C2.png, ..., C10.png
+    numTokens = regexp(strings, '\d+', 'match');
+    numericValues = cellfun(@(x) sscanf(x{1}, '%f'), numTokens);
+    [numericValues, sortIndex] = sort(numericValues);
+    sortedStrings = strings(sortIndex);
 end
