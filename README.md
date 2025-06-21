@@ -12,6 +12,16 @@ Cue Reactivity fMRI Task Execution: The CR_fMRI_main script provides a general f
 
 Offline Log File Processing for Analysis: these scripts (CR_prt, NFB_prt) convert raw experimental log data into standardized formats (TurboBrainVoyager PRT files) for real-time fMRI data analysis.
 
+Raw Data Management & BIDS Conversion: Scripts for automated downloading of raw DICOM data, initial organization, conversion to NIfTI format, and structuring data according to the Brain Imaging Data Structure (BIDS) standard.
+
+Comprehensive Preprocessing: Automated execution of the fMRIPrep pipeline for robust and standardized preprocessing of fMRI data.
+Post-Preprocessing Steps: Utilities for applying spatial smoothing (using AFNI) and extracting specific motion regressors.
+
+Event File Generation for Analysis: Scripts (extract_nfb_timings.m, extractOnsetsAndDurations.m, extractOnsetsAndDurations_CR.m) convert raw experimental log data into standardized formats (e.g., TurboBrainVoyager PRT files, MATLAB .mat files) for fMRI data analysis.
+
+Simulation and Testing Utilities: A utility script (copy_rtps_with_delay.sh) allows for realistic offline testing of the real-time feedback system by simulating the data stream from an fMRI scanner.
+
+Custom Mask/ROI Creation: Tools for generating NIfTI masks from MNI coordinates or extracting MNI coordinates from existing NIfTI masks, crucial for ROI-based analyses.
 Simulation and Testing Utilities: A utility script (copy_rtps_with_delay) allows for realistic offline testing of the real-time feedback system by simulating the data stream from an fMRI scanner.
 
 CODE author- Amir Hossein Dakhili- amirhossein.dakhili@myacu.edu.au
