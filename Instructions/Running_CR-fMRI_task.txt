@@ -1,0 +1,94 @@
+============================================================
+fMRI Cue Reactivity Task – Setup & Execution
+============================================================
+
+This document describes how to set up and run the fMRI Cue
+Reactivity task using MATLAB and Psychtoolbox-3.
+
+------------------------------------------------------------
+1) SOFTWARE REQUIREMENTS
+------------------------------------------------------------
+
+1. MATLAB
+   A recent version of MATLAB is required.
+
+2. Psychtoolbox-3
+   Psychtoolbox-3 must be properly installed and added to the
+   MATLAB path before running the task.
+
+   Download and installation instructions:
+   https://psychtoolbox.org/
+
+   After installation, verify that Psychtoolbox is working by
+   running the following command in MATLAB:
+
+   PsychtoolboxVersion
+
+   This command should execute without errors.
+
+------------------------------------------------------------
+2) CONFIGURE PATHS IN CR_fMRI_main.m
+------------------------------------------------------------
+
+Open the main task script:
+
+   CR_fMRI_main.m
+
+Inside this script, paths are configured based on your operating
+system.
+
+------------------------------------------------------------
+macOS/WINDOWS / LINUX USERS
+------------------------------------------------------------
+
+If you are using Windows, mac or Linux, locate the 'root_path' and 'PTB_path'in
+CR_fMRI_main.m and manually set the following variables:
+
+- root_path : Full path to your project directory
+- PTB_path  : Full path to your Psychtoolbox installation
+
+Example:
+
+   root_path = 'C:\path\to\your\project';
+   PTB_path  = 'C:\path\to\Psychtoolbox';
+
+After setting these paths, make sure Psychtoolbox is added to
+the MATLAB path.
+
+------------------------------------------------------------
+3) VERIFY TASK IMAGE DIRECTORY
+------------------------------------------------------------
+
+Ensure that the following folder exists INSIDE the project
+directory specified by 'root_path':
+
+   CUE_REACTIVITY_TASK_IMAGES
+
+This folder contains all images required for the cue reactivity
+task. Do not rename or move this folder.
+
+------------------------------------------------------------
+4) RUN THE CUE REACTIVITY TASK
+------------------------------------------------------------
+
+Once all paths and folders are correctly configured:
+
+1. Open MATLAB
+2. Navigate to the project directory
+3. Run the main script:
+
+   CR_fMRI_main
+
+The cue reactivity task should start without errors.
+
+------------------------------------------------------------
+NOTES & RECOMMENDATIONS
+------------------------------------------------------------
+
+- Test the task outside the scanner before experimental use.
+- Ensure screen resolution and refresh rate are appropriate.
+- Verify trigger and input device settings if running in an MRI
+  environment.
+- Do not run multiple Psychtoolbox tasks simultaneously.
+
+============================================================
