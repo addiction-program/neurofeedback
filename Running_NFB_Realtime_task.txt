@@ -1,0 +1,57 @@
+## Running the Neurofeedback Script (NFB_Realtime)
+
+Follow the steps below to run the neurofeedback task and ensure the feedback (thermometer height) updates correctly.
+
+---
+
+### 1) Install and configure Psychtoolbox-3
+Make sure **Psychtoolbox-3** is properly installed and working in your MATLAB.
+
+- Download and installation instructions: https://psychtoolbox.org/
+- After installing, ensure Psychtoolbox is on your MATLAB path (you should be able to run `PsychtoolboxVersion` without errors).
+
+---
+
+### 2) Download and Keep required folders in the same directory as the main script
+To keep paths, outputs, and directories organized, place the following folders **in the same directory** as your main neurofeedback script:
+
+- `NFB_TASK_IMAGES`
+- `RTP`
+- A new folder you should create named 'NFB_RTP_(runNumber)'
+
+This helps keep all task assets and generated output together.
+
+---
+
+### 3) Prepare the RTP/feedback stream in a separate MATLAB session
+Before running `NFB_Realtime`, open a **second MATLAB session** and run:
+
+- `copy-rtps-with-delay`
+
+In that script:
+1. When prompted for the **input folder**, select:
+   - `RTP`
+2. Set the **output folder** to match your run number, for example:
+   - `NFB_RTP_1` (for Run 1)
+   - `NFB_RTP_2` (for Run 2), etc.
+3. Choose the level of delay you want for how feedback is presented to participants (as prompted in the script), then run it.
+
+---
+### 4) change the 'Main_dir' in the NFB_Realtime script based on the path you keep the necessary folders in.
+### 5) Run the neurofeedback task (NFB_Realtime) with the correct run number
+Now run the main task:
+
+- `NFB_Realtime`
+
+**Important:** set the **run number** correctly.
+- Use **Run = 1** if you are using `NFB_RTP_1` (this test RTP file is for Run 1).
+- For other runs, either:
+  - change the task to point to `NFB_RTP_2`, `NFB_RTP_3`, etc., **or**
+  - run the `copy-rtps-with-delay` script with output set to `NFB_RTP_(runNumber)`.
+
+---
+
+### ✅ Expected behavior
+If everything is set correctly, when you start `NFB_Realtime` you should see the **thermometer height change dynamically** based on the feedback values being written into the folder:
+
+- `NFB_RTP_(runNumber)`
