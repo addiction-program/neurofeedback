@@ -65,11 +65,11 @@ rng('default')
 
 % add the folder in the path
 if ismac
-    root_path='C:\Users\NFB-user\Documents\NFB\Cue-reactivity latest\3-Current_MR_CRtask_v1_after2ndScan\Current_MR_CRtask_v1\MR_CRtask_v1';
-    PTB_path='C:\Users\NFB-user\Documents\Psychtoolbox';
+    root_path='/path/to/your/project'';
+    PTB_path='/path/to/Psychtoolbox';
 else
-    root_path='Z:\TBVData\HumanData\NFB'; % UPDATE THIS WHEN USING ON A NEW COMPUTER!
-    PTB_path='C:\Users\bmoffat\Documents\MATLAB\Psychtoolbox';
+    root_path='/path/to/your/project'';
+    PTB_path='/path/to/Psychtoolbox';
 end
 
 cd(root_path)
