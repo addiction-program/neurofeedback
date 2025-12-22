@@ -51,7 +51,7 @@ Now run the main task:
 
 ---
 
-### ✅ Expected behavior
+### Expected behavior
 If everything is set correctly, when you start `NFB_Realtime` you should see the **thermometer height change dynamically** based on the feedback values being written into the folder:
 
 - `NFB_RTP_(runNumber)`
