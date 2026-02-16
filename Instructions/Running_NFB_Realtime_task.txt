@@ -8,7 +8,39 @@ Follow the steps below to run the neurofeedback task and ensure the feedback (th
 Make sure **Psychtoolbox-3** is properly installed and working in your MATLAB.
 
 - Download and installation instructions: https://psychtoolbox.org/
-- After installing, ensure Psychtoolbox is on your MATLAB path (you should be able to run `PsychtoolboxVersion` without errors).
+- Adding Psychtoolbox to the MATLAB path:
+
+   - Open MATLAB
+   - In the main toolbar, click: Home > Set Path
+   - Click "Add Folder..."
+   - Locate and select your Psychtoolbox directory
+   - Click "Save" to permanently save the path
+   - Close the Set Path window
+
+   To verify installation, run the following command in MATLAB:
+
+       PsychtoolboxVersion
+
+   This command should execute without errors.
+
+3. GStreamer
+   GStreamer is required for proper audio/video playback
+   within Psychtoolbox.
+
+   Download and installation instructions:
+   https://gstreamer.freedesktop.org/
+
+   After installation, restart MATLAB.
+
+   To verify that GStreamer is working properly, test a basic
+   Psychtoolbox screen command in MATLAB:
+
+       Screen('Preference','SkipSyncTests',1);
+       Screen('OpenWindow', 0);
+       Screen('CloseAll');
+
+   If this executes without errors, the installation is working
+   correctly.
 
 ---
 
@@ -36,7 +68,7 @@ In that script:
    - `NFB_RTP_2` (for Run 2), etc.
 3. Choose the level of delay you want for how feedback is presented to participants (as prompted in the script), then run it.
 
----
+
 ### 4) change the 'Main_dir' in the NFB_Realtime script based on the path you keep the necessary folders in.
 ### 5) Run the neurofeedback task (NFB_Realtime) with the correct run number
 Now run the main task:
@@ -50,8 +82,48 @@ Now run the main task:
   - run the `copy-rtps-with-delay` script with output set to `NFB_RTP_(runNumber)`.
 
 ---
+------------------------------------------------------------
+4) TASK FLOW – TESTING VS SCANNER MODE
+------------------------------------------------------------
 
-### Expected behavior
-If everything is set correctly, when you start `NFB_Realtime` you should see the **thermometer height change dynamically** based on the feedback values being written into the folder:
+If testing the task on a laptop (without scanner):
+
+1. A VAS scale will appear.
+   - Press C and D to move the VAS cursor.
+   - Wait approximately 10 seconds for the scale period to end.
+
+2. When the fixation cross appears:
+   - Press E to continue.
+
+3. When the screen displays “Waiting for scanner”:
+   - Press T to simulate the scanner trigger and start the task.
+   If everything is set correctly, when you start `NFB_Realtime` you should see the **thermometer height change dynamically** based on the feedback values being written into the folder:
+   
+   - `NFB_RTP_(runNumber)`
+
+4. Once the task is complete:
+   - Press E to exit.
+
+------------------------------------------------------------
+SCANNER MODE
+------------------------------------------------------------
+
+When running the task in the MRI scanner:
+
+- The participant will use the button box.
+- The button box keys corresponding to C and D will be used
+  to move the VAS cursor.
+- The scanner will automatically send the trigger pulse (T).
+  No manual T press is required.
+
+   If everything is set correctly, when you start `NFB_Realtime` you should see the **thermometer height change dynamically** based on the feedback values being written into the folder:
 
 - `NFB_RTP_(runNumber)`
+
+Important:
+- When “Waiting for scanner” appears, wait for the scanner
+  trigger.
+- On the visual stimulation computer, press E when required
+  to proceed or exit the task after completion.
+
+
