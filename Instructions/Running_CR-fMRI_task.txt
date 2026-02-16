@@ -125,6 +125,44 @@ Once all paths and folders are correctly configured:
 
 The cue reactivity task should start without errors.
 
+
+------------------------------------------------------------
+TASK FLOW – TESTING VS SCANNER MODE
+------------------------------------------------------------
+
+If testing the task on a laptop (without scanner):
+
+1. A VAS scale will appear.
+   - Press C and D to move the VAS cursor.
+   - Wait approximately 10 seconds for the scale period to end.
+
+2. When the fixation cross appears:
+   - Press E to continue.
+
+3. When the screen displays “Waiting for scanner”:
+   - Press T to simulate the scanner trigger and start the task.
+
+4. Once the task is complete:
+   - Press E to exit.
+
+------------------------------------------------------------
+SCANNER MODE
+------------------------------------------------------------
+
+When running the task in the MRI scanner:
+
+- The participant will use the button box.
+- The button box keys corresponding to C and D will be used
+  to move the VAS cursor.
+- The scanner will automatically send the trigger pulse (T).
+  No manual T press is required.
+
+Important:
+- When “Waiting for scanner” appears, wait for the scanner
+  trigger.
+- On the visual stimulation computer, press E when required
+  to proceed or exit the task after completion.
+
 ------------------------------------------------------------
 NOTES & RECOMMENDATIONS
 ------------------------------------------------------------
