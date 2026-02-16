@@ -19,12 +19,39 @@ Reactivity task using MATLAB and Psychtoolbox-3.
    Download and installation instructions:
    https://psychtoolbox.org/
 
-   After installation, verify that Psychtoolbox is working by
-   running the following command in MATLAB:
+   Adding Psychtoolbox to the MATLAB path:
 
-   PsychtoolboxVersion
+   - Open MATLAB
+   - In the main toolbar, click: Home > Set Path
+   - Click "Add Folder..."
+   - Locate and select your Psychtoolbox directory
+   - Click "Save" to permanently save the path
+   - Close the Set Path window
+
+   To verify installation, run the following command in MATLAB:
+
+       PsychtoolboxVersion
 
    This command should execute without errors.
+
+3. GStreamer
+   GStreamer is required for proper audio/video playback
+   within Psychtoolbox.
+
+   Download and installation instructions:
+   https://gstreamer.freedesktop.org/
+
+   After installation, restart MATLAB.
+
+   To verify that GStreamer is working properly, test a basic
+   Psychtoolbox screen command in MATLAB:
+
+       Screen('Preference','SkipSyncTests',1);
+       Screen('OpenWindow', 0);
+       Screen('CloseAll');
+
+   If this executes without errors, the installation is working
+   correctly.
 
 ------------------------------------------------------------
 2) CONFIGURE PATHS IN CR_fMRI_main.m
@@ -44,19 +71,19 @@ macOS/WINDOWS / LINUX USERS
 If you are using Windows, mac or Linux, locate the 'root_path' and 'PTB_path'in
 CR_fMRI_main.m and manually set the following variables:
 
-- root_path : Full path to your project directory
+- root_path : Full path to your project directory (if you download the data directly to youroperating system, this root_path should include the files and folders in the "codes" folder.
 - PTB_path  : Full path to your Psychtoolbox installation
 
 Example:
 
-   root_path = 'C:\path\to\your\project';
-   PTB_path  = 'C:\path\to\Psychtoolbox';
+   root_path = 'C:\Documents\neurofeedback-main\neurofeedback-main\codes';
+   PTB_path  = 'C:\Documents\Psychtoolbox\3.0.22.1\Psychoolbox';
 
 After setting these paths, make sure Psychtoolbox is added to
 the MATLAB path.
 
 ------------------------------------------------------------
-3) VERIFY TASK IMAGE DIRECTORY
+3) VERIFY TASK IMAGE, LOG_FILES & EPRIME_STIM_ORDER.csv DIRECTORY
 ------------------------------------------------------------
 
 Ensure that the following folder exists INSIDE the project
@@ -67,6 +94,23 @@ directory specified by 'root_path':
 This folder contains all images required for the cue reactivity
 task. Do not rename or move this folder.
 
+An empty folder named:
+
+   LOG_FILES
+
+must be present inside the main project directory (root_path).
+
+Make sure that:
+
+- The LOG_FILES folder exists
+- It is located inside the root_path directory
+- The root_path variable in CR_fMRI_main.m correctly points
+  to the project root containing this folder
+
+If this folder is missing, the task may crash when attempting
+to write log output.
+
+Also, make sure EPRIME_STIM_ORDER.csv is in the root_path folder
 ------------------------------------------------------------
 4) RUN THE CUE REACTIVITY TASK
 ------------------------------------------------------------
