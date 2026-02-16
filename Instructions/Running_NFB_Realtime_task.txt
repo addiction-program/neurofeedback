@@ -44,7 +44,7 @@ Make sure **Psychtoolbox-3** is properly installed and working in your MATLAB.
 
 ---
 
-### 2) Download and Keep required folders in the same directory as the main script
+### 2) Download and Keep required folders in the same directory as the main script, which will be the files and folders in the "codes" folder.
 To keep paths, outputs, and directories organized, place the following folders **in the same directory** as your main neurofeedback script:
 
 - `NFB_TASK_IMAGES`
@@ -81,7 +81,7 @@ Now run the main task:
   - change the task to point to `NFB_RTP_2`, `NFB_RTP_3`, etc., **or**
   - run the `copy-rtps-with-delay` script with output set to `NFB_RTP_(runNumber)`.
 
----
+
 ------------------------------------------------------------
 4) TASK FLOW – TESTING VS SCANNER MODE
 ------------------------------------------------------------
